@@ -11,6 +11,8 @@ const MAX_PROJECTILE_SPEED = 18;
 const maxEnemies = 20;
 let currentEnemies = 0;
 
+let points = 0;
+
 // Mausbewegung
 let dragging = false;
 let startX = 0;
@@ -62,11 +64,15 @@ class Enemy {
     y;
     speed;
     radius;
-    constructor(x, y, speed, radius) {
+    color;
+    points;
+    constructor(x, y, speed, radius, color, points) {
         this.x = x;
         this.y = y;
         this.speed = speed;
         this.radius = radius;
+        this.color = color;
+        this.points = points;
     }
 
     draw() {
@@ -82,7 +88,7 @@ class Enemy {
             Math.PI * 2
         );
 
-        ctx.fillStyle = "#000000";
+        ctx.fillStyle = this.color;
         ctx.fill();
     }
 
@@ -105,6 +111,12 @@ class Enemy {
     }
 }
 
+class fastEnemy extends Enemy {
+    constructor(x, y) {
+        super(x, y, 5, 15, "#3498db", 2);
+    }
+}
+
 
 let mouseX = 0;
 let mouseY = 0;
@@ -117,6 +129,7 @@ document.addEventListener("mousemove", (event) => {
 
 
 const enemies = [];
+
 function spawnEnemy() {
     if (currentEnemies >= maxEnemies) return;
 
@@ -126,13 +139,19 @@ function spawnEnemy() {
     let x = Math.random() * pageWidth
     let y = Math.random() * pageHeight
 
-    let enemy = new Enemy(x, y, 1.5, 20);
+    let enemy;
+
+    if (Math.random() < 0.7) {
+        enemy = new Enemy(x, y, 3, 20, "#000000", 1);
+    } else {
+        enemy = new fastEnemy(x, y);
+    }
     enemies.push(enemy);
     currentEnemies++;
 }
 setInterval(() => {
     spawnEnemy();
-}, 3000);
+}, 1500);
 
 
 function handleEnemyCollisions() {
@@ -159,6 +178,23 @@ function handleEnemyCollisions() {
 
                 b.x += nx * overlap / 2;
                 b.y += ny * overlap / 2;
+            }
+        }
+        const enemy = enemies[i];
+        for (let j = projectiles.length - 1; j >= 0; j--) {
+            const projectile = projectiles[j];
+            const dx = projectile.x - enemy.x;
+            const dy = projectile.y - enemy.y;
+            const distance = Math.hypot(dx, dy);
+
+            if (distance < enemy.radius + PROJECTILE_RADIUS) {
+                // Projektil und Gegner entfernen
+                projectiles.splice(j, 1);
+                enemies.splice(i, 1);
+                currentEnemies--;
+                points += enemy.points;
+                console.log(points);
+                break;
             }
         }
     }
@@ -236,7 +272,7 @@ document.addEventListener("mouseup", (event) => {
         directionX * speed,
         directionY * speed
     ));
-    console.log(projectiles.length);
+    
 });
 
 // Ziehvorgang abbrechen, wenn das Fenster den Fokus verliert
