@@ -1,4 +1,5 @@
-
+import { Player } from "../CommonClasses/player.js";
+import { Platform } from "../CommonClasses/platform.js";
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -53,146 +54,11 @@ document.addEventListener("keyup", (event) => {
     }
 });
 
-class Player {
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
-
-        this.width = 30;
-        this.height = 40;
-
-        this.vx = 0;
-        this.vy = 0;
-
-        this.speed = 4;
-        this.jumpForce = -12;
-        this.gravity = 0.5;
-
-        this.onGround = false;
-    }
-
-    update() {
-        // Horizontale Bewegung
-        if (keys["a"] || keys["arrowleft"]) {
-            this.x -= this.speed;
-        }
-
-        if (keys["d"] || keys["arrowright"]) {
-            this.x += this.speed;
-        }
-
-
-        // Alte Position merken
-        const previousY = this.y;
-
-        // Schwerkraft und vertikale Bewegung
-        this.vy += this.gravity;
-        this.y += this.vy;
-
-        // Zunächst annehmen, dass der Spieler in der Luft ist
-        this.onGround = false;
-
-        // Plattformkollisionen überprüfen
-        // Plattformkollisionen überprüfen
-        for (const platform of platforms) {
-            const bounds = platform.getBounds();
-
-            // Horizontale Überlappung prüfen
-            const overlapsHorizontally =
-                this.x + this.width > bounds.x &&
-                this.x < bounds.x + bounds.width;
-
-            // Vertikale Bewegung nach unten:
-            // Auf der Oberkante landen
-            const crossesTop =
-                previousY + this.height <= bounds.y + 5 &&
-                this.y + this.height >= bounds.y;
-
-            if (
-                this.vy >= 0 &&
-                overlapsHorizontally &&
-                crossesTop &&
-                !keys["sPressed"]
-            ) {
-                this.y = bounds.y - this.height;
-                this.vy = 0;
-                this.onGround = true;
-            }
-
-            // Vertikale Bewegung nach oben:
-            // Auf der Unterkante landen
-            const crossesBottom =
-
-                previousY + this.height <= bounds.y + bounds.height + 5 &&
-                this.y + this.height >= bounds.y + bounds.height;
-
-
-            if (
-                this.vy >= 0 &&
-                overlapsHorizontally &&
-                crossesBottom &&
-                !keys["sPressed"]
-            ) {
-                this.y = bounds.y + bounds.height - this.height;
-                this.vy = 0;
-                this.onGround = true;
-            }
-        }
-
-        // Vorläufiger Boden am unteren Dokumentrand
-        const ground = document.documentElement.scrollHeight;
-
-        if (this.y + this.height >= ground) {
-            this.y = ground - this.height;
-            this.vy = 0;
-            this.onGround = true;
-        }
-    }
-
-    draw(ctx) {
-        const screenX = this.x - window.scrollX;
-        const screenY = this.y - window.scrollY;
-
-        ctx.fillStyle = "red";
-        ctx.fillRect(
-            screenX,
-            screenY,
-            this.width,
-            this.height
-        );
-    }
-
-    jump() {
-        if (this.onGround) {
-            this.vy = this.jumpForce;
-            this.onGround = false;
-        }
-    }
-}
-
-
-
-class Platform {
-    constructor(element) {
-        this.element = element;
-    }
-
-    getBounds() {
-        const rect = this.element.getBoundingClientRect();
-
-        return {
-            x: rect.left + window.scrollX,
-            y: rect.top + window.scrollY,
-            width: rect.width,
-            height: rect.height
-        };
-    }
-}
-
-
-const player = new Player(300, 200);
 
 const platforms = [];
+const player = new Player(300, 200, keys, platforms);
+
+
 
 document.querySelectorAll(".project-card, .ladder-block").forEach((element) => {
     platforms.push(new Platform(element));
@@ -202,64 +68,6 @@ platforms.forEach((platform) => {
 });
 
 
-class Animation {
-    constructor(imagePaths, frameDuration = 80) {
-        this.frames = [];
-        this.currentFrame = 0;
-        this.frameTimer = 0;
-        this.frameDuration = frameDuration;
-        this.loaded = false;
-
-        let loadedImages = 0;
-
-        imagePaths.forEach((path, index) => {
-            const image = new Image();
-
-            image.src = path;
-
-            image.onload = () => {
-                loadedImages++;
-
-                if (loadedImages === imagePaths.length) {
-                    this.loaded = true;
-                }
-            };
-
-            this.frames[index] = image;
-        });
-    }
-
-    update(deltaTime) {
-        if (!this.loaded) return;
-
-        this.frameTimer += deltaTime;
-
-        if (this.frameTimer >= this.frameDuration) {
-            this.currentFrame =
-                (this.currentFrame + 1) % this.frames.length;
-
-            this.frameTimer = 0;
-        }
-    }
-
-    draw(ctx, x, y, width, height) {
-        if (!this.loaded) return;
-
-        const image = this.frames[this.currentFrame];
-
-        ctx.drawImage(image, x, y, width, height);
-    }
-}
-
-const quinnWalkPaths = [];
-
-for (let i = 0; i < 45; i++) {
-    const filename = `QuinnRunSequence.${String(i).padStart(4, "0")}.png`;
-
-    quinnWalkPaths.push(`Images/Animation/${filename}`);
-}
-
-const quinnWalk = new Animation(quinnWalkPaths, 80);
 
 // Aktive Projektile
 const projectiles = [];
@@ -536,14 +344,7 @@ function animate() {
     player.update();
     player.draw(ctx);
     
-    quinnWalk.update(16);
-    quinnWalk.draw(
-        ctx,
-        300 - window.scrollX,
-        200 - window.scrollY,
-        120,
-        120
-    );
+   
     // for (let i = projectiles.length - 1; i >= 0; i--) {
     //     const projectile = projectiles[i];
 
