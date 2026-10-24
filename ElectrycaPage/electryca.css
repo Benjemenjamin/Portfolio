@@ -43,25 +43,21 @@ body {
 /* Erste Hilfsplattform */
 
 
-.helper-platform:nth-of-type(2) {
-    /* top: 480px; */
+/* .helper-platform:nth-of-type(2) {
     left: 48%;
 }
 
 .helper-platform:nth-of-type(4) {
-    /* top: 240px; */
     left: 46%;
 }
 
 .helper-platform:nth-of-type(6) {
-    /* top: 240px; */
     left: 48%;
 }
 
 .helper-platform:nth-of-type(8) {
-    /* top: 240px; */
     left: 46%;
-}
+} */
 /* =========================
    Titelbild
 ========================= */

@@ -1,5 +1,6 @@
 import { Player } from "../CommonClasses/player.js";
 import { Platform } from "../CommonClasses/platform.js";
+import { Enemy } from "../CommonClasses/enemy.js";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -9,8 +10,14 @@ const MIN_DRAG_DISTANCE = 15;
 const PROJECTILE_RADIUS = 7;
 const SPEED_PER_PIXEL = 0.18;
 const MAX_PROJECTILE_SPEED = 18;
+let flashlightOn = false;
 
-const maxEnemies = 20;
+let mouseX = 0;
+let mouseY = 0;
+
+const flashlightRange = 350;
+const flashlightAngle = Math.PI / 5; // 36 Grad
+const maxEnemies = 5;
 let currentEnemies = 0;
 
 let points = 0;
@@ -36,7 +43,7 @@ function positionHelperPlatforms() {
         helper.style.top = `${middle - helper.offsetHeight / 2}px`;
 
         // Horizontaler Abstand zur Info-Box
-        const gap = 30;
+        const gap = 39;
 
         if (index % 2 === 0) {
             // Zweite, vierte, sechste ... Plattform: rechts
@@ -171,110 +178,10 @@ const quinnWalk = new Animation(quinnWalkPaths, 80);
 // Aktive Projektile
 const projectiles = [];
 
-class Projectile {
-    x;
-    y;
-    vx;
-    vy;
-
-    constructor(x, y, vx, vy) {
-        this.x = x;
-        this.y = y;
-        this.vx = vx;
-        this.vy = vy;
-    }
-
-    draw() {
-        ctx.beginPath();
-        const screenX = this.x - window.scrollX;
-        const screenY = this.y - window.scrollY;
-
-        ctx.arc(
-            screenX,
-            screenY,
-            PROJECTILE_RADIUS,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.fillStyle = "#e74c3c";
-        ctx.fill();
-    }
-
-    update() {
-        this.x += this.vx;
-        this.y += this.vy;
-    }
-}
 
 
 
-class Enemy {
-    x;
-    y;
-    speed;
-    radius;
-    color;
-    points;
-    constructor(x, y, speed, radius, color, points) {
-        this.x = x;
-        this.y = y;
-        this.speed = speed;
-        this.radius = radius;
-        this.color = color;
-        this.points = points;
-    }
 
-    draw() {
-        ctx.beginPath();
-        const screenX = this.x - window.scrollX;
-        const screenY = this.y - window.scrollY;
-
-        ctx.arc(
-            screenX,
-            screenY,
-            this.radius,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.fillStyle = this.color;
-        ctx.fill();
-    }
-
-    update() {
-        // Aktuelle Mausposition im Dokument
-        const targetX = mouseX + window.scrollX;
-        const targetY = mouseY + window.scrollY;
-
-        // Richtung zur Maus berechnen
-        const dx = targetX - this.x;
-        const dy = targetY - this.y;
-
-        const distance = Math.hypot(dx, dy);
-
-        // Nur bewegen, wenn der Gegner nicht direkt auf der Maus liegt
-        if (distance > 0) {
-            this.x += (dx / distance) * this.speed;
-            this.y += (dy / distance) * this.speed;
-        }
-    }
-}
-
-class fastEnemy extends Enemy {
-    constructor(x, y) {
-        super(x, y, 5, 15, "#3498db", 2);
-    }
-}
-
-
-let mouseX = 0;
-let mouseY = 0;
-
-document.addEventListener("mousemove", (event) => {
-    mouseX = event.clientX;
-    mouseY = event.clientY;
-});
 
 
 
@@ -283,72 +190,32 @@ const enemies = [];
 function spawnEnemy() {
     if (currentEnemies >= maxEnemies) return;
 
-    const pageWidth = document.documentElement.scrollWidth;
-    const pageHeight = document.documentElement.scrollHeight;
+    // Zufällige Plattform auswählen
+    const platform = platforms[
+        Math.floor(Math.random() * platforms.length)
+    ];
 
-    let x = Math.random() * pageWidth
-    let y = Math.random() * pageHeight
+    // Position und Größe der Plattform ermitteln
+    const bounds = platform.getBounds();
 
-    let enemy;
+    // Zufällige horizontale Position auf der Plattform
+    const x = bounds.x + Math.random() * (bounds.width - 30);
 
-    if (Math.random() < 0.7) {
-        enemy = new Enemy(x, y, 3, 20, "#000000", 1);
-    } else {
-        enemy = new fastEnemy(x, y);
-    }
+    // Gegner direkt auf die Oberkante setzen
+    const y = bounds.y - 40;
+
+    const enemy = new Enemy(x, y, player, platforms);
+
     enemies.push(enemy);
     currentEnemies++;
 }
+
 setInterval(() => {
     spawnEnemy();
 }, 1500);
 
 
-function handleEnemyCollisions() {
-    for (let i = 0; i < enemies.length; i++) {
-        for (let j = i + 1; j < enemies.length; j++) {
-            const a = enemies[i];
-            const b = enemies[j];
 
-            const dx = b.x - a.x;
-            const dy = b.y - a.y;
-            const distance = Math.hypot(dx, dy);
-
-            const minDistance = a.radius + b.radius;
-
-            if (distance < minDistance && distance > 0) {
-                const overlap = minDistance - distance;
-
-                const nx = dx / distance;
-                const ny = dy / distance;
-
-                // Beide Gegner voneinander wegschieben
-                a.x -= nx * overlap / 2;
-                a.y -= ny * overlap / 2;
-
-                b.x += nx * overlap / 2;
-                b.y += ny * overlap / 2;
-            }
-        }
-        const enemy = enemies[i];
-        for (let j = projectiles.length - 1; j >= 0; j--) {
-            const projectile = projectiles[j];
-            const dx = projectile.x - enemy.x;
-            const dy = projectile.y - enemy.y;
-            const distance = Math.hypot(dx, dy);
-
-            if (distance < enemy.radius + PROJECTILE_RADIUS) {
-                // Projektil und Gegner entfernen
-                projectiles.splice(j, 1);
-                enemies.splice(i, 1);
-                currentEnemies--;
-                points += enemy.points;
-                console.log(points);
-                break;
-            }
-        }
-    }
-}
 
 
 // Canvas an die Fenstergröße anpassen
@@ -378,6 +245,15 @@ function isInteractiveElement(element) {
         )
     );
 }
+
+window.addEventListener("click", () => {
+    flashlightOn = !flashlightOn;
+});
+
+document.addEventListener("mousemove", (event) => {
+    mouseX = event.clientX;
+    mouseY = event.clientY;
+});
 
 // Maustaste drücken: Abschusspunkt festlegen
 document.addEventListener("mousedown", (event) => {
@@ -428,6 +304,78 @@ document.addEventListener("mouseup", (event) => {
 });
 
 
+function drawFlashlight(ctx) {
+    if (!flashlightOn) return;
+
+    // Spielerposition auf dem Bildschirm
+    const playerX = player.x + player.width / 2 - window.scrollX;
+    const playerY = player.y + player.height / 2 - window.scrollY;
+
+    // Richtung zur Maus
+    const angle = Math.atan2(
+        mouseY - playerY,
+        mouseX - playerX
+    );
+
+    ctx.save();
+
+    ctx.fillStyle = "rgba(255, 245, 180, 0.25)";
+    ctx.beginPath();
+    ctx.moveTo(playerX, playerY);
+
+    ctx.arc(
+        playerX,
+        playerY,
+        flashlightRange,
+        angle - flashlightAngle / 2,
+        angle + flashlightAngle / 2
+    );
+
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.restore();
+}
+
+function isEnemyIlluminated(enemy) {
+    if (!flashlightOn) return false;
+
+    const playerX = player.x + player.width / 2;
+    const playerY = player.y + player.height / 2;
+
+    const enemyX = enemy.x + enemy.width / 2;
+    const enemyY = enemy.y + enemy.height / 2;
+
+    const dx = enemyX - playerX;
+    const dy = enemyY - playerY;
+
+    const distance = Math.hypot(dx, dy);
+
+    // Außerhalb der Reichweite?
+    if (distance > flashlightRange) return false;
+
+    // Winkel zwischen Spieler und Maus
+    const mouseWorldX = mouseX + window.scrollX;
+    const mouseWorldY = mouseY + window.scrollY;
+
+    const flashlightDirection = Math.atan2(
+        mouseWorldY - playerY,
+        mouseWorldX - playerX
+    );
+
+    // Winkel zwischen Spieler und Gegner
+    const enemyDirection = Math.atan2(dy, dx);
+
+    let angleDifference = enemyDirection - flashlightDirection;
+
+    // Winkel auf -PI bis PI normalisieren
+    angleDifference = Math.atan2(
+        Math.sin(angleDifference),
+        Math.cos(angleDifference)
+    );
+
+    return Math.abs(angleDifference) <= flashlightAngle / 2;
+}
 
 // Ziehvorgang abbrechen, wenn das Fenster den Fokus verliert
 window.addEventListener("blur", () => {
@@ -453,32 +401,15 @@ function animate() {
         120,
         120
     );
-    // for (let i = projectiles.length - 1; i >= 0; i--) {
-    //     const projectile = projectiles[i];
 
-    //     // Position aktualisieren
-    //     projectile.update();
+    for (let i = enemies.length - 1; i >= 0; i--) {
+        const enemy = enemies[i];
+        enemy.isLit = isEnemyIlluminated(enemy);
+        enemy.update();
+        enemy.draw(ctx);
+    }
 
-    //     const margin = 200;
-    //     if (
-    //         projectile.x < -margin ||
-    //         projectile.x > document.documentElement.scrollWidth + margin ||
-    //         projectile.y < -margin ||
-    //         projectile.y > document.documentElement.scrollHeight + margin
-    //     ) {
-    //         projectiles.splice(i, 1);
-    //         continue;
-    //     }
-
-    //     // Projektil als Kreis zeichnen
-    //     projectile.draw();
-    // }
-
-    // for (let i = enemies.length - 1; i >= 0; i--) {
-    //     const enemy = enemies[i];
-    //     enemy.update();
-    //     enemy.draw();
-    // }
+    drawFlashlight(ctx);
 
     // handleEnemyCollisions();
     // Nächsten Animationsframe starten

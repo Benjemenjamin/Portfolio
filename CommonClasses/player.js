@@ -6,6 +6,7 @@ export class Player {
         this.platforms = platforms;
         this.width = 30;
         this.height = 40;
+        this.lastPlatform = null;
 
         this.vx = 0;
         this.vy = 0;
