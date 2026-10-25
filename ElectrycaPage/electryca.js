@@ -11,6 +11,7 @@ const PROJECTILE_RADIUS = 7;
 const SPEED_PER_PIXEL = 0.18;
 const MAX_PROJECTILE_SPEED = 18;
 let flashlightOn = false;
+let lightsOn = false;
 
 let mouseX = 0;
 let mouseY = 0;
@@ -100,6 +101,15 @@ document.addEventListener("keyup", (event) => {
     }
 });
 
+const codeInput = document.getElementById("codeInput");
+
+codeInput.addEventListener("input", () => {
+    if (codeInput.value === "4827") {
+        console.log("Richtiger Code!");
+        document.body.classList.add("lights-on");
+        lightsOn = true;
+    }
+});
 
 const platforms = [];
 const player = new Player(300, 200, keys, platforms);
@@ -337,6 +347,111 @@ function drawFlashlight(ctx) {
     ctx.restore();
 }
 
+
+function updateHiddenCode() {
+    const code = document.querySelector(".hidden-code");
+
+    if (!code) return;
+
+    const rect = code.getBoundingClientRect();
+
+    const codeX = rect.left + rect.width / 2 + window.scrollX;
+    const codeY = rect.top + rect.height / 2 + window.scrollY;
+
+    const playerX = player.x + player.width / 2;
+    const playerY = player.y + player.height / 2;
+
+    code.style.setProperty(
+        "--light-x",
+        `${playerX - codeX}px`
+    );
+
+    code.style.setProperty(
+        "--light-y",
+        `${playerY - codeY}px`
+    );
+
+    const dx = codeX - playerX;
+    const dy = codeY - playerY;
+
+    const distance = Math.hypot(dx, dy);
+
+    const mouseWorldX = mouseX + window.scrollX;
+    const mouseWorldY = mouseY + window.scrollY;
+
+    const flashlightDirection = Math.atan2(
+        mouseWorldY - playerY,
+        mouseWorldX - playerX
+    );
+
+    const codeDirection = Math.atan2(dy, dx);
+
+    let angleDifference = codeDirection - flashlightDirection;
+
+    angleDifference = Math.atan2(
+        Math.sin(angleDifference),
+        Math.cos(angleDifference)
+    );
+
+    const illuminated =
+        flashlightOn &&
+        distance <= flashlightRange &&
+        Math.abs(angleDifference) <= flashlightAngle / 2;
+
+    code.style.opacity = illuminated ? "1" : "0";
+}
+
+function drawHiddenCode(ctx, codeX, codeY, codeText, fontSize = 24) {
+
+    if (lightsOn) {
+        ctx.fillStyle = "#fff5b4";
+        ctx.font = `bold ${fontSize}px Arial`;
+        ctx.fillText(
+            codeText,
+            codeX - window.scrollX,
+            codeY - window.scrollY
+        );
+        return;
+    }
+    if (!flashlightOn) return;
+    const playerX =
+        player.x + player.width / 2 - window.scrollX;
+
+    const playerY =
+        player.y + player.height / 2 - window.scrollY;
+
+    const angle = Math.atan2(
+        mouseY - playerY,
+        mouseX - playerX
+    );
+
+    ctx.save();
+
+    // Lichtkegel als Zeichenbereich festlegen
+    ctx.beginPath();
+    ctx.moveTo(playerX, playerY);
+    ctx.arc(
+        playerX,
+        playerY,
+        flashlightRange,
+        angle - flashlightAngle / 2,
+        angle + flashlightAngle / 2
+    );
+    ctx.closePath();
+    ctx.clip();
+
+    // Nur der Teil des Codes im Lichtkegel wird gezeichnet
+    ctx.fillStyle = "#fff5b4";
+    ctx.font = `bold ${fontSize}px Arial`;
+    ctx.fillText(
+        codeText,
+        codeX - window.scrollX,
+        codeY - window.scrollY
+    );
+
+    ctx.restore();
+}
+
 function isEnemyIlluminated(enemy) {
     if (!flashlightOn) return false;
 
@@ -402,15 +517,89 @@ function animate() {
         120
     );
 
-    for (let i = enemies.length - 1; i >= 0; i--) {
-        const enemy = enemies[i];
+    // for (let i = enemies.length - 1; i >= 0; i--) {
+    //     const enemy = enemies[i];
+    //     enemy.isLit = isEnemyIlluminated(enemy);
+    //     enemy.update();
+    //     enemy.draw(ctx);
+    // }
+
+    for (const enemy of enemies) {
+        if (lightsOn){
+            enemy.isLit = true;
+            enemy.draw(ctx);
+            continue;
+        }
+
         enemy.isLit = isEnemyIlluminated(enemy);
         enemy.update();
-        enemy.draw(ctx);
+
+        if (flashlightOn) {
+            ctx.save();
+
+            const playerX =
+                player.x + player.width / 2 - window.scrollX;
+            const playerY =
+                player.y + player.height / 2 - window.scrollY;
+
+            const angle = Math.atan2(
+                mouseY - playerY,
+                mouseX - playerX
+            );
+
+            ctx.beginPath();
+            ctx.moveTo(playerX, playerY);
+            ctx.arc(
+                playerX,
+                playerY,
+                flashlightRange,
+                angle - flashlightAngle / 2,
+                angle + flashlightAngle / 2
+            );
+            ctx.closePath();
+            ctx.clip();
+
+            enemy.draw(ctx);
+
+            ctx.restore();
+        }
     }
 
     drawFlashlight(ctx);
+    updateHiddenCode();
+    const codePosition = document
+        .getElementById("hiddenCodePosition")
+        .getBoundingClientRect();
 
+    drawHiddenCode(
+        ctx,
+        codePosition.left + window.scrollX,
+        codePosition.top + window.scrollY,
+        "4827"
+    );
+
+    const ArrowPosition = document
+        .getElementById("hiddenArrowPosition")
+        .getBoundingClientRect();
+
+    drawHiddenCode(
+        ctx,
+        ArrowPosition.left + window.scrollX,
+        ArrowPosition.top + window.scrollY,
+        "\u279C",
+        48
+    );
+
+    const TextPosition = document
+        .getElementById("hiddenTextPosition")
+        .getBoundingClientRect();
+
+    drawHiddenCode(
+        ctx,
+        TextPosition.left + window.scrollX,
+        TextPosition.top + window.scrollY,
+        "Find the code in the dark"
+    );
     // handleEnemyCollisions();
     // Nächsten Animationsframe starten
     requestAnimationFrame(animate);

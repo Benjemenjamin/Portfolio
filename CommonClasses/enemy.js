@@ -23,7 +23,7 @@ export class Enemy {
 
         // Prüfen, ob der Spieler auf derselben Plattform steht
         const playerPlatform = this.getStandingPlatform(this.player);
-        console.log(playerPlatform);
+
 
 
         // if (playerPlatform !== this.currentPlatform) return;

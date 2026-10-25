@@ -13,6 +13,32 @@ body {
     font-family: Arial, sans-serif;
 }
 
+body.lights-on {
+    background-color: #525f79;
+}
+
+body.lights-on .hero-platform {
+    background-color: #adc6f7;
+}
+
+body.lights-on .info-platform {
+    background-color:  #4e567a;
+    border-color:  #89a1c4;
+    box-shadow: 0 8px 0  #242b36;
+}
+
+body.lights-on .helper-platform {
+    background-color: #4e567a;
+    border-color:  #89a1c4;
+    box-shadow: 0 5px 0  #242b36;
+}
+
+body.lights-on .screenshot-gallery {
+    background-color:  #4e567a;
+    border-color:  #89a1c4;
+    box-shadow: 0 8px 0  #242b36;
+}
+
 .project-level {
     position: relative;
     width: 100%;
@@ -34,8 +60,8 @@ body {
     position: absolute;
     width: 180px;
     height: 18px;
-    background: #465364;
-    border: 2px solid #8fc8ff;
+    background-color: #252d38;
+    border: 2px solid #465364;
     border-radius: 5px;
     box-shadow: 0 5px 0 #101318;
 }
@@ -188,6 +214,32 @@ body {
    sind zunächst für die Leitern vorgesehen.
    Die Leitern selbst werden später ergänzt. */
 
+#hiddenCodePosition {
+    position: absolute;
+    top: 125%;
+    left: 50%;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
+
+#hiddenTextPosition {
+    position: absolute;
+    top: 105%;
+    left: 20%;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
+
+#hiddenArrowPosition {
+    position: absolute;
+    top: -5%;
+    left: 50%;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
 
 /* =========================
    Anpassung für kleinere Bildschirme
