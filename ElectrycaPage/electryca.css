@@ -42,7 +42,7 @@ body.lights-on .screenshot-gallery {
 .project-level {
     position: relative;
     width: 100%;
-    padding: 0 100px 80px;
+    padding: 0 40px 80px;
 }
 
 #gameCanvas {
@@ -130,7 +130,7 @@ body.lights-on .screenshot-gallery {
     position: relative;
     width: 45%;
     min-height: 150px;
-    padding: 24px;
+    padding: 15px;
     background-color: #252d38;
     border: 2px solid #465364;
     border-radius: 10px;
@@ -150,7 +150,7 @@ body.lights-on .screenshot-gallery {
 .info-platform:nth-child(3),
 .info-platform:nth-child(7) {
     align-self: flex-end;
-    width: 40%;
+    width: 45%;
     margin-top: -40px;
 }
 
