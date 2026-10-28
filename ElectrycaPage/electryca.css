@@ -232,6 +232,15 @@ body.lights-on .screenshot-gallery {
     pointer-events: none;
 }
 
+#hiddenTextPosition2 {
+    position: absolute;
+    top: -10%;
+    left: 20%;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
+
 #hiddenArrowPosition {
     position: absolute;
     top: -5%;
