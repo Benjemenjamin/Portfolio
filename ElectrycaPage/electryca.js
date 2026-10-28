@@ -6,13 +6,10 @@ const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 // Einstellungen
-const MIN_DRAG_DISTANCE = 15;
-const PROJECTILE_RADIUS = 7;
-const SPEED_PER_PIXEL = 0.18;
-const MAX_PROJECTILE_SPEED = 18;
+
 let flashlightOn = false;
 let lightsOn = false;
-
+flashlightOn = true;
 let mouseX = 0;
 let mouseY = 0;
 
@@ -112,7 +109,7 @@ codeInput.addEventListener("input", () => {
 });
 
 const platforms = [];
-const player = new Player(300, 200, keys, platforms);
+const player = new Player(160, 200, keys, platforms);
 
 
 function getPlatforms() {
@@ -587,7 +584,7 @@ function animate() {
         ArrowPosition.left + window.scrollX,
         ArrowPosition.top + window.scrollY,
         "\u279C",
-        48
+        60
     );
 
     const TextPosition = document
@@ -599,6 +596,17 @@ function animate() {
         TextPosition.left + window.scrollX,
         TextPosition.top + window.scrollY,
         "Find the code in the dark"
+    );
+
+    const TextPosition2 = document
+        .getElementById("hiddenTextPosition2")
+        .getBoundingClientRect();
+
+    drawHiddenCode(
+        ctx,
+        TextPosition2.left + window.scrollX,
+        TextPosition2.top + window.scrollY,
+        "Toggle flashlight with left mouse click"
     );
     // handleEnemyCollisions();
     // Nächsten Animationsframe starten
