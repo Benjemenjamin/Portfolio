@@ -1,0 +1,284 @@
+/* =========================
+   Allgemeines Layout
+========================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background-color: #d89970;
+    color: #f0f0f0;
+    font-family: Arial, sans-serif;
+}
+
+
+.project-level {
+    position: relative;
+    width: 100%;
+    padding: 0 100px 80px;
+}
+
+#gameCanvas {
+    position: fixed;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.helper-platform {
+    position: absolute;
+    width: 180px;
+    height: 18px;
+    background-color: #794114;
+    border: 2px solid #465364;
+    border-radius: 5px;
+    box-shadow: 0 5px 0 #101318;
+}
+
+/* Erste Hilfsplattform */
+
+
+/* .helper-platform:nth-of-type(2) {
+    left: 48%;
+}
+
+.helper-platform:nth-of-type(4) {
+    left: 46%;
+}
+
+.helper-platform:nth-of-type(6) {
+    left: 48%;
+}
+
+.helper-platform:nth-of-type(8) {
+    left: 46%;
+} */
+/* =========================
+   Titelbild
+========================= */
+
+.hero-platform {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #252a32;
+    border-radius: 0 0 12px 12px;
+}
+
+.hero-platform img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.hero-platform h1 {
+    position: absolute;
+    left: 30px;
+    bottom: 15px;
+    margin: 0;
+    color: white;
+    font-size: clamp(24px, 3vw, 40px);
+    text-shadow: 2px 2px 8px black;
+}
+
+/* =========================
+   Textplattformen
+========================= */
+
+.info-area {
+    display: flex;
+    flex-direction: column;
+    padding: 100px 0;
+    position: relative;
+}
+
+.info-platform {
+    position: relative;
+    width: 45%;
+    min-height: 150px;
+    padding: 24px;
+    background-color: #794114;
+    border: 2px solid #5e2541;
+    border-radius: 10px;
+    box-shadow: 0 8px 0 #101318;
+}
+
+/* Erste, dritte, fünfte Plattform: links */
+.info-platform:nth-child(1),
+.info-platform:nth-child(5),
+.info-platform:nth-child(6) {
+    align-self: flex-start;
+    margin-top: -40px;
+}
+
+/* Zweite, vierte, sechste Plattform: rechts */
+.info-platform:nth-child(2),
+.info-platform:nth-child(3),
+.info-platform:nth-child(7) {
+    align-self: flex-end;
+    width: 40%;
+    margin-top: -40px;
+}
+
+.info-platform h2 {
+    margin-top: 0;
+    color: #fdfdfd;
+    font-size: 24px;
+}
+
+.info-platform p {
+    margin-bottom: 0;
+    line-height: 1.6;
+    color: #d5dbe3;
+}
+
+/* =========================
+   Screenshot-Bereich
+========================= */
+
+.screenshot-gallery {
+    position: relative;
+    width: 100%;
+    padding: 28px;
+    background-color: #794114;
+    border: 2px solid #5e2541;
+    border-radius: 10px;
+    box-shadow: 0 8px 0 #101318;
+}
+
+.screenshot-gallery h2 {
+    margin-top: 0;
+    margin-bottom: 24px;
+    color: #e4e8ec;
+    font-size: 28px;
+}
+
+.screenshot-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.screenshot-grid img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 6px;
+    transition: transform 0.2s ease;
+}
+
+.screenshot-grid img:hover {
+    transform: scale(1.03);
+}
+
+/* =========================
+   Platz für die Leitern
+========================= */
+
+/* Die seitlichen 100px im project-level
+   sind zunächst für die Leitern vorgesehen.
+   Die Leitern selbst werden später ergänzt. */
+
+#hiddenCodePosition {
+    position: absolute;
+    top: 125%;
+    left: 50%;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
+
+#hiddenTextPosition {
+    position: absolute;
+    top: 105%;
+    left: 20%;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
+
+#hiddenTextPosition2 {
+    position: absolute;
+    top: -10%;
+    left: 20%;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
+
+#hiddenArrowPosition {
+    position: absolute;
+    top: -5%;
+    left: 50%;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
+
+/* =========================
+   Anpassung für kleinere Bildschirme
+========================= */
+
+@media (max-width: 800px) {
+    .project-level {
+        padding: 0 50px 60px;
+    }
+
+    .hero-platform {
+        height: 240px;
+    }
+
+    .info-area {
+        gap: 60px;
+        padding: 60px 0;
+    }
+
+    .info-platform,
+    .info-platform:nth-child(even) {
+        width: 85%;
+    }
+
+    .screenshot-gallery {
+        padding: 18px;
+    }
+
+    .screenshot-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+}
+
+@media (max-width: 500px) {
+    .project-level {
+        padding: 0 35px 40px;
+    }
+
+    .hero-platform {
+        height: 200px;
+    }
+
+    .hero-platform h1 {
+        left: 15px;
+        bottom: 12px;
+    }
+
+    .info-platform,
+    .info-platform:nth-child(even) {
+        width: 100%;
+        padding: 18px;
+    }
+
+    .screenshot-grid {
+        grid-template-columns: 1fr;
+    }
+}
