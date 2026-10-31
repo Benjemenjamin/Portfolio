@@ -155,20 +155,30 @@ class Animation {
 
         this.frameTimer += deltaTime;
 
-        if (this.frameTimer >= this.frameDuration) {
+        while (this.frameTimer >= this.frameDuration) {
             this.currentFrame =
                 (this.currentFrame + 1) % this.frames.length;
 
-            this.frameTimer = 0;
+            this.frameTimer -= this.frameDuration;
         }
     }
 
-    draw(ctx, x, y, width, height) {
+    draw(ctx, x, y, width, height, direction = 1) {
         if (!this.loaded) return;
 
         const image = this.frames[this.currentFrame];
 
-        ctx.drawImage(image, x, y, width, height);
+        ctx.save();
+
+        if (direction === -1) {
+            ctx.translate(x + width, y);
+            ctx.scale(-1, 1);
+            ctx.drawImage(image, 0, 0, width, height);
+        } else {
+            ctx.drawImage(image, x, y, width, height);
+        }
+
+        ctx.restore();
     }
 }
 
@@ -188,7 +198,9 @@ const projectiles = [];
 
 
 
-
+function createQuinnAnimation() {
+    return new Animation(quinnWalkPaths, 50);
+}
 
 
 
@@ -197,21 +209,36 @@ const enemies = [];
 function spawnEnemy() {
     if (currentEnemies >= maxEnemies) return;
 
-    // Zufällige Plattform auswählen
-    const platform = platforms[
-        Math.floor(Math.random() * platforms.length)
+    // Plattformen auswählen, auf denen noch kein Gegner steht
+    const availablePlatforms = platforms.filter(platform => {
+        return !enemies.some(enemy => {
+            return enemy.getStandingPlatform(enemy) === platform;
+        });
+    });
+
+    // Wenn jede Plattform bereits einen Gegner hat
+    if (availablePlatforms.length === 0) return;
+
+    // Zufällige freie Plattform auswählen
+    const platform = availablePlatforms[
+        Math.floor(Math.random() * availablePlatforms.length)
     ];
 
-    // Position und Größe der Plattform ermitteln
     const bounds = platform.getBounds();
 
-    // Zufällige horizontale Position auf der Plattform
-    const x = bounds.x + Math.random() * (bounds.width - 30);
+    // Zufällige horizontale Position
+    const x = bounds.x + Math.random() * (bounds.width - 60);
 
-    // Gegner direkt auf die Oberkante setzen
-    const y = bounds.y - 40;
+    // Gegner auf der Plattform platzieren
+    const y = bounds.y - 80;
 
-    const enemy = new Enemy(x, y, player, platforms);
+    const enemy = new Enemy(
+        x,
+        y,
+        player,
+        platforms,
+        createQuinnAnimation()
+    );
 
     enemies.push(enemy);
     currentEnemies++;
@@ -274,41 +301,41 @@ document.addEventListener("mousedown", (event) => {
 });
 
 // Maustaste loslassen: Projektil abschießen
-document.addEventListener("mouseup", (event) => {
-    if (!dragging || event.button !== 0) return;
+// document.addEventListener("mouseup", (event) => {
+//     if (!dragging || event.button !== 0) return;
 
-    dragging = false;
+//     dragging = false;
 
-    const endX = event.clientX;
-    const endY = event.clientY;
+//     const endX = event.clientX;
+//     const endY = event.clientY;
 
-    const dx = startX - endX;
-    const dy = startY - endY;
+//     const dx = startX - endX;
+//     const dy = startY - endY;
 
-    const distance = Math.hypot(dx, dy);
+//     const distance = Math.hypot(dx, dy);
 
-    // Kleine Bewegungen gelten als normale Klicks
-    if (distance < MIN_DRAG_DISTANCE) return;
+//     // Kleine Bewegungen gelten als normale Klicks
+//     if (distance < MIN_DRAG_DISTANCE) return;
 
-    // Flugrichtung entgegen der Zugrichtung
-    const directionX = dx / distance;
-    const directionY = dy / distance;
+//     // Flugrichtung entgegen der Zugrichtung
+//     const directionX = dx / distance;
+//     const directionY = dy / distance;
 
-    // Zugdistanz bestimmt die Geschwindigkeit
-    const speed = Math.min(
-        distance * SPEED_PER_PIXEL,
-        MAX_PROJECTILE_SPEED
-    );
+//     // Zugdistanz bestimmt die Geschwindigkeit
+//     const speed = Math.min(
+//         distance * SPEED_PER_PIXEL,
+//         MAX_PROJECTILE_SPEED
+//     );
 
-    // Neues Projektil erzeugen
-    projectiles.push(new Projectile(
-        startX + window.scrollX,
-        startY + window.scrollY,
-        directionX * speed,
-        directionY * speed
-    ));
+//     // Neues Projektil erzeugen
+//     projectiles.push(new Projectile(
+//         startX + window.scrollX,
+//         startY + window.scrollY,
+//         directionX * speed,
+//         directionY * speed
+//     ));
 
-});
+// });
 
 
 function drawFlashlight(ctx) {
@@ -505,14 +532,14 @@ function animate() {
     player.update();
     player.draw(ctx);
 
-    quinnWalk.update(16);
-    quinnWalk.draw(
-        ctx,
-        300 - window.scrollX,
-        200 - window.scrollY,
-        120,
-        120
-    );
+    // quinnWalk.update(16);
+    // quinnWalk.draw(
+    //     ctx,
+    //     300 - window.scrollX,
+    //     200 - window.scrollY,
+    //     120,
+    //     120
+    // );
 
     // for (let i = enemies.length - 1; i >= 0; i--) {
     //     const enemy = enemies[i];
@@ -522,14 +549,19 @@ function animate() {
     // }
 
     for (const enemy of enemies) {
-        if (lightsOn){
+        if (lightsOn) {
             enemy.isLit = true;
             enemy.draw(ctx);
+            // enemy.update();
             continue;
         }
 
         enemy.isLit = isEnemyIlluminated(enemy);
         enemy.update();
+
+        if (enemy.animation && enemy.isMoving) {
+            enemy.animation.update(32);
+        }
 
         if (flashlightOn) {
             ctx.save();

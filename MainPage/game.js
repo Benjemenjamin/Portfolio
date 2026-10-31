@@ -19,29 +19,11 @@ let dragging = false;
 let startX = 0;
 let startY = 0;
 
+
+let pressedA = false
+let pressedB = false
 const keys = {};
 
-document.addEventListener("keydown", (event) => {
-    keys[event.key.toLowerCase()] = true;
-
-    if (event.code === "Space") {
-        event.preventDefault();
-
-        if (!keys["spacePressed"]) {
-            player.jump();
-            keys["spacePressed"] = true;
-        }
-    }
-    if (event.code === "KeyS") {
-        console.log("s");
-
-
-        if (!keys["sPressed"]) {
-            keys["sPressed"] = true;
-        }
-    }
-
-});
 
 document.addEventListener("keyup", (event) => {
     keys[event.key.toLowerCase()] = false;
@@ -56,17 +38,80 @@ document.addEventListener("keyup", (event) => {
 
 
 const platforms = [];
-const player = new Player(300, 200, keys, platforms);
+// const player = new Player(300, 200, keys, platforms);
 
+const tutorialPlatform = document.querySelector(".TutorialPlatform");
+const bounds = tutorialPlatform.getBoundingClientRect();
 
+const spawnX = bounds.left + window.scrollX + bounds.width / 2 - 15;
+const spawnY = bounds.top + window.scrollY - 40;
 
-document.querySelectorAll(".project-card, .ladder-block").forEach((element) => {
+const player = new Player(spawnX, spawnY, keys, platforms);
+
+document.querySelectorAll(".project-card, .ladder-block, .TutorialPlatform").forEach((element) => {
     platforms.push(new Platform(element));
 });
 platforms.forEach((platform) => {
     console.log(platform.getBounds());
 });
 
+document.addEventListener("keydown", (event) => {
+    keys[event.key.toLowerCase()] = true;
+
+    switch (event.code) {
+        case "Space":
+            event.preventDefault();
+
+            if (!keys["spacePressed"]) {
+                player.jump();
+                completeTutorialTask("jumpCheck");
+                keys["spacePressed"] = true;
+            }
+            break;
+
+        case "KeyS":
+            console.log("s");
+            if (!keys["sPressed"]) {
+                keys["sPressed"] = true;
+                completeTutorialTask("downCheck");
+            }
+            break;
+
+        case "KeyA":
+            console.log("a");
+            pressedA = true
+            if (pressedA && pressedB) {
+                completeTutorialTask("moveCheck");
+            }
+            break;
+
+        case "KeyD":
+            console.log("d");
+            pressedB = true
+            if (pressedA && pressedB) {
+                completeTutorialTask("moveCheck");
+            }
+            break;
+    }
+
+    // if (event.code === "Space") {
+    //     event.preventDefault();
+
+    //     if (!keys["spacePressed"]) {
+    //         player.jump();
+    //         keys["spacePressed"] = true;
+    //     }
+    // }
+    // if (event.code === "KeyS") {
+    //     console.log("s");
+
+
+    //     if (!keys["sPressed"]) {
+    //         keys["sPressed"] = true;
+    //     }
+    // }
+
+});
 
 
 // Aktive Projektile
@@ -177,7 +222,10 @@ document.addEventListener("mousemove", (event) => {
     mouseY = event.clientY;
 });
 
-
+function completeTutorialTask(taskId) {
+    const checkbox = document.getElementById(taskId);
+    checkbox.classList.add("completed");
+}
 
 const enemies = [];
 
@@ -343,8 +391,8 @@ function animate() {
     );
     player.update();
     player.draw(ctx);
-    
-   
+
+
     // for (let i = projectiles.length - 1; i >= 0; i--) {
     //     const projectile = projectiles[i];
 

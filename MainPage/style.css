@@ -44,9 +44,9 @@ nav a {
     text-align: center;
 }
 
-.home-content {
+/* .home-content {
     max-width: 700px;
-}
+} */
 
 
 /* PROJECTS */
@@ -152,4 +152,46 @@ footer {
     background-color: #555;
     border: 2px solid #333;
     border-radius: 3px;
+}
+
+
+
+.TutorialPlatform {
+    width: 800px;
+    border: 1px solid #333;
+    border-radius: 10px;
+    margin-top: 150px;
+    padding: 10px;
+}
+
+.tutorial-task {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tutorial-task p {
+    margin: 10px 0;
+}
+
+.check-box {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #222;
+    border-radius: 3px;
+    margin-right: 10px;
+}
+
+.check-box.completed {
+    background-color: #4CAF50;
+    position: relative;
+}
+
+.check-box.completed::after {
+    content: "✓";
+    color: white;
+    position: absolute;
+    left: 3px;
+    top: -2px;
+    font-size: 18px;
 }
