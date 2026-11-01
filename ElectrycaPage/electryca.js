@@ -114,7 +114,7 @@ class FlickeringLight {
         ctx.restore();
     }
 }
-lightposition = document
+let lightposition = document
     .getElementById("lightposition")
     .getBoundingClientRect();
 
