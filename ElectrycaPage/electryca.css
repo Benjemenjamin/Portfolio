@@ -250,6 +250,14 @@ body.lights-on .screenshot-gallery {
     pointer-events: none;
 }
 
+#lightposition {
+    position: absolute;
+    top: 100%;
+    left: 81%;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
 /* =========================
    Anpassung für kleinere Bildschirme
 ========================= */

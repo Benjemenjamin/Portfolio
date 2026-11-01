@@ -114,8 +114,12 @@ class FlickeringLight {
         ctx.restore();
     }
 }
+lightposition = document
+    .getElementById("lightposition")
+    .getBoundingClientRect();
 
-const tutorialLight = new FlickeringLight(1540, 1070, 300);
+// const tutorialLight = new FlickeringLight(1540, 1070, 300);
+const tutorialLight = new FlickeringLight(lightposition.left + window.scrollX, lightposition.top + window.scrollY, 300);
 const keys = {};
 
 document.addEventListener("keydown", (event) => {
