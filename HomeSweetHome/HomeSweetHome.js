@@ -19,6 +19,7 @@ let points = 0;
 // Mausbewegung
 let startX = 0;
 let startY = 0;
+let lastTime = 0;
 
 const helperPlatforms = document.querySelectorAll(".helper-platform");
 const infoPlatforms = document.querySelectorAll(".info-platform");
@@ -154,7 +155,7 @@ export class Furniture {
 
 export class FurnitureEnemy extends Enemy {
     constructor(x, y, player, platforms, health = 1) {
-        super(x, y, player, platforms);
+        super(x, y, player, platforms, null);
 
         this.health = health;
         this.dead = false;
@@ -248,6 +249,8 @@ window.addEventListener("mousedown", (event) => {
 
 
 const platforms = [];
+const spawnPoints = [];
+const helperPlatformsArray = [];
 const player = new Player(160, 200, keys, platforms);
 
 
@@ -255,9 +258,18 @@ function getPlatforms() {
     document.querySelectorAll(".info-platform, .helper-platform, .screenshot-gallery").forEach((element) => {
         platforms.push(new Platform(element));
     });
-    platforms.forEach((platform) => {
-        console.log(platform.getBounds());
+    document.querySelectorAll(".info-platform, .screenshot-gallery").forEach((element) => {
+        if (element.classList.contains("info-platform") &&
+            element === document.querySelector(".info-platform")) {
+            return;
+        }
+        spawnPoints.push(new Platform(element));
     });
+    document.querySelectorAll(".helper-platform").forEach((element) => {
+        helperPlatformsArray.push(new Platform(element));
+    });
+    const shuffled = [...helperPlatformsArray].sort(() => Math.random() - 0.5);
+    spawnPoints.push(...shuffled.slice(0, 2));
 }
 
 getPlatforms();
@@ -282,35 +294,68 @@ const projectiles = [];
 
 const enemies = [];
 
+// function spawnEnemy() {
+//     if (currentEnemies >= maxEnemies) return;
+
+//     // Zufällige Plattform auswählen
+//     const platform = platforms[
+//         Math.floor(Math.random() * platforms.length)
+//     ];
+
+//     // Position und Größe der Plattform ermitteln
+//     const bounds = platform.getBounds();
+
+//     // Zufällige horizontale Position auf der Plattform
+//     const x = bounds.x + Math.random() * (bounds.width - 30);
+
+//     // Gegner direkt auf die Oberkante setzen
+//     const y = bounds.y - 40;
+
+//     const enemy = new FurnitureEnemy(x, y, player, platforms, 3);
+
+//     enemies.push(enemy);
+//     currentEnemies++;
+// }
+
+// setInterval(() => {
+//     spawnEnemy();
+// }, 1500);
+
+
 function spawnEnemy() {
     if (currentEnemies >= maxEnemies) return;
 
-    // Zufällige Plattform auswählen
-    const platform = platforms[
-        Math.floor(Math.random() * platforms.length)
+    // Plattformen auswählen, auf denen noch kein Gegner steht
+    const availablePlatforms = spawnPoints.filter(platform => {
+        return !enemies.some(enemy => {
+            return enemy.getStandingPlatform(enemy) === platform;
+        });
+    });
+
+    // Wenn jede Plattform bereits einen Gegner hat
+    if (availablePlatforms.length === 0) return;
+
+    // Zufällige freie Plattform auswählen
+    const platform = availablePlatforms[
+        Math.floor(Math.random() * availablePlatforms.length)
     ];
 
-    // Position und Größe der Plattform ermitteln
     const bounds = platform.getBounds();
 
-    // Zufällige horizontale Position auf der Plattform
-    const x = bounds.x + Math.random() * (bounds.width - 30);
+    // Zufällige horizontale Position
+    const x = bounds.x + Math.random() * (bounds.width - 60);
 
-    // Gegner direkt auf die Oberkante setzen
-    const y = bounds.y - 40;
+    // Gegner auf der Plattform platzieren
+    const y = bounds.y - 80;
 
-    const enemy = new FurnitureEnemy(x, y, player, platforms, 3);
+    const enemy = new FurnitureEnemy(x, y, player, spawnPoints, 3);
 
     enemies.push(enemy);
     currentEnemies++;
+    spawnEnemy();
 }
 
-setInterval(() => {
-    spawnEnemy();
-}, 1500);
-
-
-
+spawnEnemy();
 
 
 // Canvas an die Fenstergröße anpassen
@@ -408,7 +453,9 @@ window.addEventListener("blur", () => {
 });
 
 // Projektile bewegen und zeichnen
-function animate() {
+function animate(timestamp) {
+    const deltaTime = timestamp - lastTime;
+    lastTime = timestamp;
     ctx.clearRect(
         0,
         0,
@@ -416,7 +463,7 @@ function animate() {
         window.innerHeight
     );
     for (const item of furniture) {
-        item.update();
+        item.update(deltaTime);
         item.draw(ctx);
     }
 
@@ -439,7 +486,7 @@ function animate() {
             enemies.splice(i, 1);
         }
     }
-    player.update();
+    player.update(deltaTime);
     player.draw(ctx);
 
     if (carriedFurniture !== null) {
