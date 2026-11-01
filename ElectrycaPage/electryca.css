@@ -232,14 +232,6 @@ body.lights-on .screenshot-gallery {
     pointer-events: none;
 }
 
-#hiddenTextPosition2 {
-    position: absolute;
-    top: -10%;
-    left: 20%;
-    width: 1px;
-    height: 1px;
-    pointer-events: none;
-}
 
 #hiddenArrowPosition {
     position: absolute;
@@ -250,10 +242,19 @@ body.lights-on .screenshot-gallery {
     pointer-events: none;
 }
 
+.hiddenTextPosition2 {
+    position: absolute;
+    top: -10%;
+    left: 20%;
+    width: 500px;
+    height: 100px;
+    pointer-events: none;
+}
+
 #lightposition {
     position: absolute;
-    top: -128%;
-    left: 59%;
+    top: -212%;
+    left: 63%;
     width: 1px;
     height: 1px;
     pointer-events: none;
