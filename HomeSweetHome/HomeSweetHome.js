@@ -449,7 +449,7 @@ document.addEventListener("mousedown", (event) => {
 
 // Ziehvorgang abbrechen, wenn das Fenster den Fokus verliert
 window.addEventListener("blur", () => {
-    dragging = false;
+    // dragging = false;
 });
 
 // Projektile bewegen und zeichnen
