@@ -8,7 +8,7 @@ const MIN_DRAG_DISTANCE = 15;
 const PROJECTILE_RADIUS = 7;
 const SPEED_PER_PIXEL = 0.18;
 const MAX_PROJECTILE_SPEED = 18;
-
+let lastTime = 0;
 const maxEnemies = 20;
 let currentEnemies = 0;
 
@@ -382,14 +382,16 @@ window.addEventListener("blur", () => {
 });
 
 // Projektile bewegen und zeichnen
-function animate() {
+function animate(timestamp) {
+    const deltaTime = timestamp - lastTime;
+    lastTime = timestamp;
     ctx.clearRect(
         0,
         0,
         window.innerWidth,
         window.innerHeight
     );
-    player.update();
+    player.update(deltaTime);
     player.draw(ctx);
 
 

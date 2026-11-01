@@ -18,23 +18,27 @@ export class Player {
         this.onGround = false;
     }
 
-    update() {
-        // Horizontale Bewegung
+    update(deltaTime) {
+        if (!Number.isFinite(deltaTime)) return;
+        const timeScale = deltaTime / 16.67;
+
         if (this.keys["a"] || this.keys["arrowleft"]) {
-            this.x -= this.speed;
+            this.x -= this.speed * timeScale;
         }
 
         if (this.keys["d"] || this.keys["arrowright"]) {
-            this.x += this.speed;
+            this.x += this.speed * timeScale;
         }
+
 
 
         // Alte Position merken
         const previousY = this.y;
 
         // Schwerkraft und vertikale Bewegung
-        this.vy += this.gravity;
-        this.y += this.vy;
+
+        this.vy += this.gravity * timeScale;
+        this.y += this.vy * timeScale;
 
         // Zunächst annehmen, dass der Spieler in der Luft ist
         this.onGround = false;

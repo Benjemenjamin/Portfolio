@@ -679,7 +679,7 @@ function animate(timestamp) {
         window.innerWidth,
         window.innerHeight
     );
-    player.update();
+    player.update(deltaTime);
     player.draw(ctx);
     tutorialLight.update(deltaTime);
     tutorialLight.draw(ctx);
