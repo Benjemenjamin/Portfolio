@@ -252,8 +252,8 @@ body.lights-on .screenshot-gallery {
 
 #lightposition {
     position: absolute;
-    top: 100%;
-    left: 81%;
+    top: -128%;
+    left: 59%;
     width: 1px;
     height: 1px;
     pointer-events: none;
