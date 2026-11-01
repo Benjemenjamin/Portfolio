@@ -15,7 +15,7 @@ let mouseY = 0;
 
 const flashlightRange = 350;
 const flashlightAngle = Math.PI / 5; // 36 Grad
-const maxEnemies = 5;
+const maxEnemies = 6;
 let currentEnemies = 0;
 
 let points = 0;
@@ -24,6 +24,7 @@ let points = 0;
 let dragging = false;
 let startX = 0;
 let startY = 0;
+let lastTime = 0;
 
 const helperPlatforms = document.querySelectorAll(".helper-platform");
 const infoPlatforms = document.querySelectorAll(".info-platform");
@@ -62,7 +63,59 @@ function positionHelperPlatforms() {
 
 positionHelperPlatforms();
 
+class FlickeringLight {
+    constructor(x, y, range) {
+        this.x = x;
+        this.y = y;
+        this.range = range;
 
+        this.isOn = true;
+        this.timer = 0;
+        this.nextFlicker = 10;
+    }
+
+    update(deltaTime) {
+        if (!Number.isFinite(deltaTime)) return;
+        this.timer += deltaTime;
+
+        if (this.timer >= this.nextFlicker) {
+            this.isOn = !this.isOn;
+            this.timer = 0;
+
+            if (this.isOn) {
+                // kurz an
+                this.nextFlicker = 70 + Math.random() * 300;
+            } else {
+                // länger aus
+                this.nextFlicker = 150 + Math.random() * 600;
+            }
+        }
+    }
+
+    draw(ctx) {
+        if (!this.isOn) return;
+        ctx.save();
+
+        ctx.fillStyle = "rgba(255, 245, 180, 0.25)";
+        ctx.beginPath();
+        ctx.moveTo(this.x - window.scrollX, this.y - window.scrollY);
+
+        ctx.arc(
+            this.x - window.scrollX,
+            this.y - window.scrollY,
+            this.range,
+            Math.PI / 2 - Math.PI / 3 / 2,
+            Math.PI / 2 + Math.PI / 3 / 2
+        );
+
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.restore();
+    }
+}
+
+const tutorialLight = new FlickeringLight(1540, 1070, 300);
 const keys = {};
 
 document.addEventListener("keydown", (event) => {
@@ -109,6 +162,8 @@ codeInput.addEventListener("input", () => {
 });
 
 const platforms = [];
+const spawnPoints = [];
+const helperPlatformsArray = [];
 const player = new Player(160, 200, keys, platforms);
 
 
@@ -116,15 +171,24 @@ function getPlatforms() {
     document.querySelectorAll(".info-platform, .helper-platform, .screenshot-gallery").forEach((element) => {
         platforms.push(new Platform(element));
     });
-    platforms.forEach((platform) => {
-        console.log(platform.getBounds());
+    document.querySelectorAll(".info-platform, .screenshot-gallery").forEach((element) => {
+        if (element.classList.contains("info-platform") &&
+            element === document.querySelector(".info-platform")) {
+            return;
+        }
+        spawnPoints.push(new Platform(element));
     });
+    document.querySelectorAll(".helper-platform").forEach((element) => {
+        helperPlatformsArray.push(new Platform(element));
+    });
+    const shuffled = [...helperPlatformsArray].sort(() => Math.random() - 0.5);
+    spawnPoints.push(...shuffled.slice(0, 2));
 }
 
 getPlatforms();
 
 class Animation {
-    constructor(imagePaths, frameDuration = 80) {
+    constructor(imagePaths, frameDuration) {
         this.frames = [];
         this.currentFrame = 0;
         this.frameTimer = 0;
@@ -199,7 +263,7 @@ const projectiles = [];
 
 
 function createQuinnAnimation() {
-    return new Animation(quinnWalkPaths, 50);
+    return new Animation(quinnWalkPaths, 30);
 }
 
 
@@ -210,7 +274,7 @@ function spawnEnemy() {
     if (currentEnemies >= maxEnemies) return;
 
     // Plattformen auswählen, auf denen noch kein Gegner steht
-    const availablePlatforms = platforms.filter(platform => {
+    const availablePlatforms = spawnPoints.filter(platform => {
         return !enemies.some(enemy => {
             return enemy.getStandingPlatform(enemy) === platform;
         });
@@ -236,17 +300,16 @@ function spawnEnemy() {
         x,
         y,
         player,
-        platforms,
+        spawnPoints,
         createQuinnAnimation()
     );
 
     enemies.push(enemy);
     currentEnemies++;
+    spawnEnemy();
 }
 
-setInterval(() => {
-    spawnEnemy();
-}, 1500);
+spawnEnemy();
 
 
 
@@ -425,48 +488,109 @@ function updateHiddenCode() {
     code.style.opacity = illuminated ? "1" : "0";
 }
 
+// function drawHiddenCode(ctx, codeX, codeY, codeText, fontSize = 24) {
+
+//     if (lightsOn) {
+//         ctx.fillStyle = "#fff5b4";
+//         ctx.font = `bold ${fontSize}px Arial`;
+//         ctx.fillText(
+//             codeText,
+//             codeX - window.scrollX,
+//             codeY - window.scrollY
+//         );
+//         return;
+//     }
+//     if (!flashlightOn) return;
+//     const playerX =
+//         player.x + player.width / 2 - window.scrollX;
+
+//     const playerY =
+//         player.y + player.height / 2 - window.scrollY;
+
+//     const angle = Math.atan2(
+//         mouseY - playerY,
+//         mouseX - playerX
+//     );
+
+//     ctx.save();
+
+//     // Lichtkegel als Zeichenbereich festlegen
+//     ctx.beginPath();
+//     ctx.moveTo(playerX, playerY);
+//     ctx.arc(
+//         playerX,
+//         playerY,
+//         flashlightRange,
+//         angle - flashlightAngle / 2,
+//         angle + flashlightAngle / 2
+//     );
+//     ctx.closePath();
+//     ctx.clip();
+
+//     // Nur der Teil des Codes im Lichtkegel wird gezeichnet
+//     ctx.fillStyle = "#fff5b4";
+//     ctx.font = `bold ${fontSize}px Arial`;
+//     ctx.fillText(
+//         codeText,
+//         codeX - window.scrollX,
+//         codeY - window.scrollY
+//     );
+
+//     ctx.restore();
+// }
 function drawHiddenCode(ctx, codeX, codeY, codeText, fontSize = 24) {
 
     if (lightsOn) {
         ctx.fillStyle = "#fff5b4";
         ctx.font = `bold ${fontSize}px Arial`;
-        ctx.fillText(
-            codeText,
-            codeX - window.scrollX,
-            codeY - window.scrollY
-        );
+        ctx.fillText(codeText, codeX - window.scrollX, codeY - window.scrollY);
         return;
     }
-    if (!flashlightOn) return;
-    const playerX =
-        player.x + player.width / 2 - window.scrollX;
 
-    const playerY =
-        player.y + player.height / 2 - window.scrollY;
-
-    const angle = Math.atan2(
-        mouseY - playerY,
-        mouseX - playerX
-    );
+    const playerX = player.x + player.width / 2 - window.scrollX;
+    const playerY = player.y + player.height / 2 - window.scrollY;
 
     ctx.save();
 
-    // Lichtkegel als Zeichenbereich festlegen
     ctx.beginPath();
-    ctx.moveTo(playerX, playerY);
-    ctx.arc(
-        playerX,
-        playerY,
-        flashlightRange,
-        angle - flashlightAngle / 2,
-        angle + flashlightAngle / 2
-    );
-    ctx.closePath();
+
+    // Taschenlampenbereich
+    if (flashlightOn) {
+        const angle = Math.atan2(
+            mouseY - playerY,
+            mouseX - playerX
+        );
+
+        ctx.moveTo(playerX, playerY);
+        ctx.arc(
+            playerX,
+            playerY,
+            flashlightRange,
+            angle - flashlightAngle / 2,
+            angle + flashlightAngle / 2
+        );
+    }
+
+    // Stationärer Lichtbereich
+    if (tutorialLight.isOn) {
+        ctx.moveTo(
+            tutorialLight.x - window.scrollX,
+            tutorialLight.y - window.scrollY
+        );
+
+        ctx.arc(
+            tutorialLight.x - window.scrollX,
+            tutorialLight.y - window.scrollY,
+            tutorialLight.range,
+            Math.PI / 2 - Math.PI / 3 / 2,
+            Math.PI / 2 + Math.PI / 3 / 2
+        );
+    }
     ctx.clip();
 
-    // Nur der Teil des Codes im Lichtkegel wird gezeichnet
     ctx.fillStyle = "#fff5b4";
     ctx.font = `bold ${fontSize}px Arial`;
+
     ctx.fillText(
         codeText,
         codeX - window.scrollX,
@@ -474,46 +598,69 @@ function drawHiddenCode(ctx, codeX, codeY, codeText, fontSize = 24) {
     );
 
     ctx.restore();
+
 }
 
 function isEnemyIlluminated(enemy) {
-    if (!flashlightOn) return false;
-
-    const playerX = player.x + player.width / 2;
-    const playerY = player.y + player.height / 2;
-
     const enemyX = enemy.x + enemy.width / 2;
     const enemyY = enemy.y + enemy.height / 2;
 
-    const dx = enemyX - playerX;
-    const dy = enemyY - playerY;
+    // Stationäres Licht überprüfen
+    if (tutorialLight.isOn) {
+        const dx = enemyX - tutorialLight.x;
+        const dy = enemyY - tutorialLight.y;
 
-    const distance = Math.hypot(dx, dy);
+        const distance = Math.hypot(dx, dy);
 
-    // Außerhalb der Reichweite?
-    if (distance > flashlightRange) return false;
+        const enemyDirection = Math.atan2(dy, dx);
+        const angleDifference = Math.atan2(
 
-    // Winkel zwischen Spieler und Maus
-    const mouseWorldX = mouseX + window.scrollX;
-    const mouseWorldY = mouseY + window.scrollY;
+            Math.sin(enemyDirection - Math.PI / 2),
+            Math.cos(enemyDirection - Math.PI / 2)
 
-    const flashlightDirection = Math.atan2(
-        mouseWorldY - playerY,
-        mouseWorldX - playerX
-    );
 
-    // Winkel zwischen Spieler und Gegner
-    const enemyDirection = Math.atan2(dy, dx);
+        );
 
-    let angleDifference = enemyDirection - flashlightDirection;
+        if (distance <= tutorialLight.range &&
+            Math.abs(angleDifference) <= Math.PI / 3 / 2
+        ) {
+            return true;
+        }
+    }
 
-    // Winkel auf -PI bis PI normalisieren
-    angleDifference = Math.atan2(
-        Math.sin(angleDifference),
-        Math.cos(angleDifference)
-    );
+    // Taschenlampe überprüfen
+    if (flashlightOn) {
+        const playerX = player.x + player.width / 2;
+        const playerY = player.y + player.height / 2;
 
-    return Math.abs(angleDifference) <= flashlightAngle / 2;
+        const dx = enemyX - playerX;
+        const dy = enemyY - playerY;
+
+        const distance = Math.hypot(dx, dy);
+
+        if (distance > flashlightRange) return false;
+
+        const mouseWorldX = mouseX + window.scrollX;
+        const mouseWorldY = mouseY + window.scrollY;
+
+        const flashlightDirection = Math.atan2(
+            mouseWorldY - playerY,
+            mouseWorldX - playerX
+        );
+
+        const enemyDirection = Math.atan2(dy, dx);
+
+        let angleDifference = enemyDirection - flashlightDirection;
+
+        angleDifference = Math.atan2(
+            Math.sin(angleDifference),
+            Math.cos(angleDifference)
+        );
+
+        return Math.abs(angleDifference) <= flashlightAngle / 2;
+    }
+
+    return false;
 }
 
 // Ziehvorgang abbrechen, wenn das Fenster den Fokus verliert
@@ -522,7 +669,10 @@ window.addEventListener("blur", () => {
 });
 
 // Projektile bewegen und zeichnen
-function animate() {
+function animate(timestamp) {
+    const deltaTime = timestamp - lastTime;
+    lastTime = timestamp;
+
     ctx.clearRect(
         0,
         0,
@@ -531,24 +681,11 @@ function animate() {
     );
     player.update();
     player.draw(ctx);
-
-    // quinnWalk.update(16);
-    // quinnWalk.draw(
-    //     ctx,
-    //     300 - window.scrollX,
-    //     200 - window.scrollY,
-    //     120,
-    //     120
-    // );
-
-    // for (let i = enemies.length - 1; i >= 0; i--) {
-    //     const enemy = enemies[i];
-    //     enemy.isLit = isEnemyIlluminated(enemy);
-    //     enemy.update();
-    //     enemy.draw(ctx);
-    // }
+    tutorialLight.update(deltaTime);
+    tutorialLight.draw(ctx);
 
     for (const enemy of enemies) {
+
         if (lightsOn) {
             enemy.isLit = true;
             enemy.draw(ctx);
@@ -558,9 +695,9 @@ function animate() {
 
         enemy.isLit = isEnemyIlluminated(enemy);
         enemy.update();
-
+        // enemy.draw(ctx);
         if (enemy.animation && enemy.isMoving) {
-            enemy.animation.update(32);
+            enemy.animation.update(deltaTime);
         }
 
         if (flashlightOn) {
@@ -592,10 +729,34 @@ function animate() {
 
             ctx.restore();
         }
+        if (tutorialLight.isOn) {
+            const lightX = tutorialLight.x - window.scrollX;
+            const lightY = tutorialLight.y - window.scrollY;
+
+            ctx.save();
+
+            ctx.beginPath();
+            ctx.moveTo(lightX, lightY);
+
+            ctx.arc(
+                lightX,
+                lightY,
+                tutorialLight.range,
+                Math.PI / 2 - Math.PI / 3 / 2,
+                Math.PI / 2 + Math.PI / 3 / 2
+            );
+
+            ctx.closePath();
+            ctx.clip();
+
+            enemy.draw(ctx);
+
+            ctx.restore();
+        }
     }
 
     drawFlashlight(ctx);
-    updateHiddenCode();
+    // updateHiddenCode();
     const codePosition = document
         .getElementById("hiddenCodePosition")
         .getBoundingClientRect();

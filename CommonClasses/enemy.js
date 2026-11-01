@@ -56,8 +56,7 @@ export class Enemy {
 
         const playerPlatform = this.getStandingPlatform(this.player);
 
-        if (this.player.x + this.player.width > this.currentPlatform.getBounds().x && this.player.x < this.currentPlatform.getBounds().x + this.currentPlatform.getBounds().width)
-            {
+        if (this.player.x + this.player.width > this.currentPlatform.getBounds().x && this.player.x < this.currentPlatform.getBounds().x + this.currentPlatform.getBounds().width) {
             if (playerPlatform !== this.currentPlatform) return;
 
             if (this.player.x < this.x) {
@@ -96,6 +95,7 @@ export class Enemy {
     }
 
     draw(ctx) {
+        // if (!this.isLit) return;
         if (this.animation) {
             const scale = 1.7;
 
@@ -107,14 +107,6 @@ export class Enemy {
             const drawY = this.y - window.scrollY + this.height - drawHeight;
 
 
-            // Vorläufige Darstellung zum Testen
-            // ctx.fillStyle = "lime";
-            // ctx.fillRect(
-            //     this.x - window.scrollX,
-            //     this.y - window.scrollY,
-            //     this.width,
-            //     this.height
-            // );
             this.animation.draw(
                 ctx,
                 drawX,
