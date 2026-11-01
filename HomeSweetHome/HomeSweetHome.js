@@ -508,7 +508,7 @@ function animate(timestamp) {
 
     for (const enemy of enemies) {
 
-        enemy.update();
+        enemy.update(deltaTime);
         enemy.draw(ctx);
     }
 

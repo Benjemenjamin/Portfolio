@@ -694,7 +694,7 @@ function animate(timestamp) {
         }
 
         enemy.isLit = isEnemyIlluminated(enemy);
-        enemy.update();
+        enemy.update(deltaTime);
         // enemy.draw(ctx);
         if (enemy.animation && enemy.isMoving) {
             enemy.animation.update(deltaTime);

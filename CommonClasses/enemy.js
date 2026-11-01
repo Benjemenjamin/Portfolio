@@ -45,7 +45,7 @@ export class Enemy {
     //     }
 
     // }
-    update() {
+    update(deltaTime) {
         this.isMoving = false;
 
         if (this.isLit) return;
@@ -56,16 +56,20 @@ export class Enemy {
 
         const playerPlatform = this.getStandingPlatform(this.player);
 
-        if (this.player.x + this.player.width > this.currentPlatform.getBounds().x && this.player.x < this.currentPlatform.getBounds().x + this.currentPlatform.getBounds().width) {
+        if (this.player.x + this.player.width > this.currentPlatform.getBounds().x &&
+            this.player.x < this.currentPlatform.getBounds().x + this.currentPlatform.getBounds().width) {
+
             if (playerPlatform !== this.currentPlatform) return;
 
+            const movement = this.speed * (deltaTime / 16.67);
+
             if (this.player.x < this.x) {
-                this.x -= this.speed;
+                this.x -= movement;
                 this.direction = -1;
                 this.isMoving = true;
             }
             else if (this.player.x > this.x) {
-                this.x += this.speed;
+                this.x += movement;
                 this.direction = 1;
                 this.isMoving = true;
             }
