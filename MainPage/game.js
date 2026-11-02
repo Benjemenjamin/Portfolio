@@ -18,6 +18,7 @@ let points = 0;
 let dragging = false;
 let startX = 0;
 let startY = 0;
+let currentDoor = null;
 
 
 let pressedA = false
@@ -92,6 +93,11 @@ document.addEventListener("keydown", (event) => {
                 completeTutorialTask("moveCheck");
             }
             break;
+
+        case "KeyE":
+            console.log("e");
+            openDoor(currentDoor);
+            break;
     }
 });
 
@@ -116,7 +122,7 @@ window.addEventListener("keydown", (event) => {
 
 
 function checkPlayerVisibility() {
-    console.log(manualScrolling);
+
 
     const playerMoving =
         keys["a"] ||
@@ -151,6 +157,57 @@ function checkPlayerVisibility() {
             top: Math.max(0, Math.min(targetY, document.documentElement.scrollHeight - window.innerHeight)),
             behavior: "smooth"
         });
+    }
+}
+let byDoor = false;
+function checkDoorCollision() {
+    const doors = document.querySelectorAll(".project-entry");
+
+    let foundDoor = null;
+
+    for (const door of doors) {
+        const bounds = door.getBoundingClientRect();
+
+        const doorX = bounds.left + window.scrollX;
+        const doorY = bounds.top + window.scrollY;
+
+        const image = door.querySelector("img");
+
+        if (
+            player.x + player.width > doorX &&
+            player.x < doorX + bounds.width &&
+            player.y + player.height > doorY &&
+            player.y < doorY + bounds.height
+        ) {
+            foundDoor = door;
+        }
+    }
+
+    // Erst nach der Schleife den Zustand aktualisieren
+    currentDoor = foundDoor;
+    byDoor = currentDoor !== null;
+
+    for (const door of doors) {
+        const image = door.querySelector("img");
+
+        if (door === currentDoor) {
+            image.src = "Images/jpg(1).png";
+        } else {
+            image.src = "Images/jpg.png";
+        }
+    }
+}
+
+function openDoor(door) {
+    if (!byDoor) return;
+    if (!door) return;
+
+
+    if (door.dataset.tutorial === "true") {
+        completeTutorialTask("doorCheck");
+    }
+    else {
+        window.location.href = door.dataset.link;
     }
 }
 
@@ -434,7 +491,7 @@ function animate(timestamp) {
     player.update(deltaTime);
     player.draw(ctx);
     checkPlayerVisibility();
-
+    checkDoorCollision()
 
     // for (let i = projectiles.length - 1; i >= 0; i--) {
     //     const projectile = projectiles[i];
