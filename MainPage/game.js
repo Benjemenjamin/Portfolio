@@ -93,26 +93,66 @@ document.addEventListener("keydown", (event) => {
             }
             break;
     }
-
-    // if (event.code === "Space") {
-    //     event.preventDefault();
-
-    //     if (!keys["spacePressed"]) {
-    //         player.jump();
-    //         keys["spacePressed"] = true;
-    //     }
-    // }
-    // if (event.code === "KeyS") {
-    //     console.log("s");
-
-
-    //     if (!keys["sPressed"]) {
-    //         keys["sPressed"] = true;
-    //     }
-    // }
-
 });
 
+
+let manualScrolling = false;
+
+window.addEventListener("wheel", () => {
+    manualScrolling = true;
+});
+
+window.addEventListener("touchmove", () => {
+    manualScrolling = true;
+});
+
+window.addEventListener("keydown", (event) => {
+    const scrollKeys = ["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "];
+
+    if (scrollKeys.includes(event.key)) {
+        manualScrolling = true;
+    }
+});
+
+
+function checkPlayerVisibility() {
+    console.log(manualScrolling);
+
+    const playerMoving =
+        keys["a"] ||
+        keys["d"] ||
+        keys["arrowleft"] ||
+        keys["arrowright"] ||
+        keys[" "] ||
+        keys["space"] ||
+        keys["s"];
+
+    if (playerMoving) {
+        manualScrolling = false;
+    }
+
+    if (manualScrolling) return;
+
+    const playerScreenX = player.x - window.scrollX;
+    const playerScreenY = player.y - window.scrollY;
+
+    const isOutside =
+        playerScreenX + player.width < 0 ||
+        playerScreenX > window.innerWidth ||
+        playerScreenY + player.height < 0 ||
+        playerScreenY > window.innerHeight;
+
+    if (isOutside) {
+        const targetX = player.x + player.width / 2 - window.innerWidth / 2;
+        const targetY = player.y + player.height / 2 - window.innerHeight / 2;
+
+        window.scrollTo({
+            left: Math.max(0, Math.min(targetX, document.documentElement.scrollWidth - window.innerWidth)),
+            top: Math.max(0, Math.min(targetY, document.documentElement.scrollHeight - window.innerHeight)),
+            behavior: "smooth"
+        });
+    }
+}
 
 // Aktive Projektile
 const projectiles = [];
@@ -393,6 +433,7 @@ function animate(timestamp) {
     );
     player.update(deltaTime);
     player.draw(ctx);
+    checkPlayerVisibility();
 
 
     // for (let i = projectiles.length - 1; i >= 0; i--) {
