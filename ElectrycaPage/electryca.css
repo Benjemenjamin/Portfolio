@@ -13,8 +13,20 @@ body {
     font-family: Arial, sans-serif;
 }
 
-body.lights-on {
-    background-color: #525f79;
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-color: rgba(255, 255, 255, 0.432);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 2;
+}
+
+/* background-color: #525f79; */
+body.lights-on::before {
+    opacity: 1;
 }
 
 body.lights-on .hero-platform {
@@ -22,20 +34,20 @@ body.lights-on .hero-platform {
 }
 
 body.lights-on .info-platform {
-    background-color: #4e567a;
-    border-color: #89a1c4;
+    background-color: #3b415c;
+    border-color: #5c6d86;
     box-shadow: 0 8px 0 #242b36;
 }
 
 body.lights-on .helper-platform {
-    background-color: #4e567a;
-    border-color: #89a1c4;
+    background-color: #3b415c;
+    border-color: #5c6d86;
     box-shadow: 0 5px 0 #242b36;
 }
 
 body.lights-on .screenshot-gallery {
-    background-color: #4e567a;
-    border-color: #89a1c4;
+    background-color: #3b415c;
+    border-color: #5c6d86;
     box-shadow: 0 8px 0 #242b36;
 }
 
@@ -87,6 +99,7 @@ body.lights-on .screenshot-gallery {
     overflow: hidden;
     background-color: #252a32;
     border-radius: 0 0 12px 12px;
+    z-index: 3;
 }
 
 .hero-platform img {
@@ -95,6 +108,7 @@ body.lights-on .screenshot-gallery {
     height: 100%;
     object-fit: cover;
     object-position: center;
+    z-index: 3;
 }
 
 .hero-platform h1 {
@@ -105,6 +119,7 @@ body.lights-on .screenshot-gallery {
     color: white;
     font-size: clamp(24px, 3vw, 40px);
     text-shadow: 2px 2px 8px black;
+    z-index: 3;
 }
 
 /* =========================
@@ -118,6 +133,7 @@ body.lights-on .screenshot-gallery {
     border: 2px solid #465364;
     border-radius: 5px;
     box-shadow: 0 5px 0 #101318;
+    z-index: 3;
 }
 
 .info-area {
@@ -136,6 +152,7 @@ body.lights-on .screenshot-gallery {
     border: 2px solid #465364;
     border-radius: 10px;
     box-shadow: 0 8px 0 #101318;
+    z-index: 3;
 }
 
 
@@ -179,6 +196,7 @@ body.lights-on .screenshot-gallery {
     border: 2px solid #465364;
     border-radius: 10px;
     box-shadow: 0 8px 0 #101318;
+    z-index: 3;
 }
 
 .screenshot-gallery h2 {
@@ -192,6 +210,7 @@ body.lights-on .screenshot-gallery {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 18px;
+    z-index: 3;
 }
 
 .screenshot-grid img {
@@ -201,6 +220,7 @@ body.lights-on .screenshot-gallery {
     object-fit: cover;
     border-radius: 6px;
     transition: transform 0.2s ease;
+    z-index: 3;
 }
 
 .screenshot-grid img:hover {
