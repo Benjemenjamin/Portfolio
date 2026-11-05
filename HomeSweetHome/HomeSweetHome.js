@@ -21,6 +21,86 @@ let startX = 0;
 let startY = 0;
 let lastTime = 0;
 
+
+
+function createHelperPlatforms() {
+    const infoArea = document.querySelector(".info-area");
+    const infoPlatforms = document.querySelectorAll(".info-platform");
+
+    infoPlatforms.forEach((info, index) => {
+        const infoRect = info.getBoundingClientRect();
+        const areaRect = infoArea.getBoundingClientRect();
+
+        // Position der Info-Box relativ zur info-area
+        const top = infoRect.top - areaRect.top;
+        const height = infoRect.height;
+        console.log(height);
+
+
+        // Vorhandene Helferplattform finden
+        const normalHelper = info.nextElementSibling;
+
+        if (!normalHelper?.classList.contains("helper-platform")) {
+            return;
+        }
+
+        const gap = 39;
+
+        // Horizontale Position abhängig von der Info-Box
+        let helperLeft;
+
+        if (index % 2 === 0) {
+            // Erste, dritte, fünfte ... Info-Box: rechts
+            helperLeft = infoRect.right - areaRect.left + gap;
+        } else {
+            // Zweite, vierte, sechste ... Info-Box: links
+            helperLeft = infoRect.left - areaRect.left
+                - normalHelper.offsetWidth - gap;
+        }
+
+        if (height > 300 && height < 420) {
+            console.log("Info-Box ist sehr hoch");
+
+            // Normale Plattform weiter nach unten verschieben
+            normalHelper.style.left = `${helperLeft}px`;
+            normalHelper.style.top = `${top + height * 0.65}px`;
+
+            // Zusätzliche Plattform erstellen
+            const extraHelper = document.createElement("div");
+            extraHelper.classList.add("helper-platform");
+
+            extraHelper.style.left = `${helperLeft}px`;
+            extraHelper.style.top = `${top + height * 0.3}px`;
+
+            infoArea.appendChild(extraHelper);
+        }
+        else if (height >= 420) {
+
+            // Normale Plattform weiter nach unten verschieben
+            normalHelper.style.left = `${helperLeft}px`;
+            normalHelper.style.top = `${top + height * 0.8}px`;
+
+            // Zusätzliche Plattform erstellen
+            const extraHelper = document.createElement("div");
+            extraHelper.classList.add("helper-platform");
+
+            extraHelper.style.left = `${helperLeft}px`;
+            extraHelper.style.top = `${top + height * 0.5}px`;
+
+            infoArea.appendChild(extraHelper);
+
+            const extraHelper2 = document.createElement("div");
+            extraHelper2.classList.add("helper-platform");
+
+            extraHelper2.style.left = `${helperLeft}px`;
+            extraHelper2.style.top = `${top + height * 0.2}px`;
+
+            infoArea.appendChild(extraHelper2);
+        }
+    });
+}
+
+
 const helperPlatforms = document.querySelectorAll(".helper-platform");
 const infoPlatforms = document.querySelectorAll(".info-platform");
 function positionHelperPlatforms() {
@@ -332,7 +412,7 @@ function getPlatforms() {
     const shuffled = [...helperPlatformsArray].sort(() => Math.random() - 0.5);
     spawnPoints.push(...shuffled.slice(0, 2));
 }
-
+createHelperPlatforms()
 getPlatforms();
 
 const furniture = [
