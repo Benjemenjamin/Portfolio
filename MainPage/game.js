@@ -192,6 +192,8 @@ function checkDoorCollision() {
 
         if (door === currentDoor) {
             image.src = "Images/jpg(1).png";
+            console.log("Door open");
+            
         } else {
             image.src = "Images/jpg.png";
         }
