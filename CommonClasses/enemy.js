@@ -1,10 +1,11 @@
 export class Enemy {
-    constructor(x, y, player, platforms, animation = null) {
+    constructor(x, y, player, platforms, animation = null, offset = 27) {
         this.x = x;
         this.y = y;
 
         this.player = player;
         this.platforms = platforms;
+        this.offset = offset;
 
         this.width = 60;
         this.height = 80;
@@ -114,7 +115,7 @@ export class Enemy {
             this.animation.draw(
                 ctx,
                 drawX,
-                drawY + 27,
+                drawY + this.offset,
                 drawWidth,
                 drawHeight,
                 this.direction

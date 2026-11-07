@@ -1,6 +1,7 @@
 import { Player } from "../CommonClasses/player.js";
 import { Platform } from "../CommonClasses/platform.js";
 import { Enemy } from "../CommonClasses/enemy.js";
+import { Animation } from "../CommonClasses/animation.js";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -295,8 +296,8 @@ export class Furniture {
 }
 
 export class FurnitureEnemy extends Enemy {
-    constructor(x, y, player, platforms, health = 1) {
-        super(x, y, player, platforms, null);
+    constructor(x, y, player, platforms, health = 1, animation = createGlitchAnimation()) {
+        super(x, y, player, platforms, animation, 10);
 
         this.health = health;
         this.dead = false;
@@ -311,6 +312,24 @@ export class FurnitureEnemy extends Enemy {
     }
 }
 
+
+
+const glitchPaths = [];
+
+for (let i = 0; i < 10; i++) {
+    const filename = `GlitchEnemy_${String(i).padStart(2, "0")}.png`;
+
+    glitchPaths.push(`../Images/GlitchAnimation/${filename}`);
+    console.log(glitchPaths);
+
+}
+
+
+
+
+function createGlitchAnimation() {
+    return new Animation(glitchPaths, 150);
+}
 
 const keys = {};
 
@@ -651,6 +670,9 @@ function animate(timestamp) {
 
         enemy.update(deltaTime);
         enemy.draw(ctx);
+        if (enemy.animation && enemy.isMoving) {
+            enemy.animation.update(deltaTime);
+        }
     }
 
 

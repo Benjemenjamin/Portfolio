@@ -17,7 +17,7 @@ body {
 .project-level {
     position: relative;
     width: 100%;
-    padding: 0 100px 80px;
+    padding: 0 40px 80px;
 }
 
 #gameCanvas {
@@ -105,7 +105,7 @@ body {
     position: relative;
     width: 45%;
     min-height: 150px;
-    padding: 24px;
+    padding: 15px;
     background-color: #794114;
     border: 2px solid #5e2541;
     border-radius: 10px;
@@ -224,6 +224,29 @@ body {
     height: 1px;
     pointer-events: none;
 }
+
+.info-platform h3 {
+    margin-bottom: 5px;
+    color: #ddd;
+}
+
+.info-platform p {
+    margin-top: 0;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.info-platform ul {
+    padding-left: 25px;
+    margin-top: 5px;
+    margin-bottom: -5px;
+    line-height: 1.6;
+}
+
+.info-platform li {
+    margin-bottom: 5px;
+}
+
 
 /* =========================
    Anpassung für kleinere Bildschirme
