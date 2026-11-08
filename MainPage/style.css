@@ -200,6 +200,8 @@ footer {
 .project-entry {
     width: 10%;
     height: auto;
+    flex-shrink: 0;
+    align-self: flex-end;
 }
 
 .tutorial-door {
@@ -215,4 +217,15 @@ footer {
     width: 100%;
     height: 100%;
     object-fit: contain;
+}
+
+.project-content {
+    display: flex;
+    align-items:flex-start;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.project-info {
+    flex: 1;
 }
