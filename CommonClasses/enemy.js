@@ -13,7 +13,7 @@ export class Enemy {
         this.damageCooldown = 0;
 
         this.contactTimer = 0;
-        this.contactDamageDelay = 300; // 0,5 Sekunden
+        this.contactDamageDelay = 150; // 0,5 Sekunden
 
         this.currentPlatform = null;
         this.isLit = false;

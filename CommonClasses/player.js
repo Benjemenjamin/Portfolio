@@ -19,7 +19,7 @@ export class Player {
 
         this.visible = true;
         this.invulnerable = false;
-        this.invulnerabilityTime = 3000;
+        this.invulnerabilityTime = 2000;
         this.invulnerabilityTimer = 0;
 
         this.blinkInterval = 150;
