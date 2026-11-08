@@ -10,6 +10,10 @@ export class Enemy {
         this.width = 60;
         this.height = 80;
         this.speed = 2;
+        this.damageCooldown = 0;
+
+        this.contactTimer = 0;
+        this.contactDamageDelay = 300; // 0,5 Sekunden
 
         this.currentPlatform = null;
         this.isLit = false;
@@ -18,35 +22,10 @@ export class Enemy {
         this.isMoving = false;
     }
 
-    // update() {
-    //     if (this.isLit) return;
-    //     // Plattform unter dem Gegner finden
-    //     this.currentPlatform = this.getStandingPlatform(this);
-
-    //     if (!this.currentPlatform) return;
-
-    //     // Prüfen, ob der Spieler auf derselben Plattform steht
-    //     const playerPlatform = this.getStandingPlatform(this.player);
-
-
-
-    //     // if (playerPlatform !== this.currentPlatform) return;
-    //     // (this.player.x > this.currentPlatform.getBounds().x && this.player.x < this.currentPlatform.getBounds().x + this.currentPlatform.getBounds().width)
-
-    //     if (this.player.x + this.player.width > this.currentPlatform.getBounds().x && this.player.x < this.currentPlatform.getBounds().x + this.currentPlatform.getBounds().width) {
-
-    //         if (playerPlatform !== this.currentPlatform) return;
-    //         // Auf den Spieler zulaufen
-    //         if (this.player.x < this.x) {
-    //             this.x -= this.speed;
-    //         } else if (this.player.x > this.x) {
-    //             this.x += this.speed;
-    //         }
-
-    //     }
-
-    // }
     update(deltaTime) {
+        if (!deltaTime) return;
+        this.damageCooldown = Math.max(0, this.damageCooldown - deltaTime);
+        this.checkPlayerCollision(deltaTime);
         this.isMoving = false;
 
         if (this.isLit) return;
@@ -74,6 +53,26 @@ export class Enemy {
                 this.direction = 1;
                 this.isMoving = true;
             }
+        }
+    }
+
+    checkPlayerCollision(deltaTime) {
+        const collision =
+            this.x < this.player.x + this.player.width &&
+            this.x + this.width > this.player.x &&
+            this.y < this.player.y + this.player.height &&
+            this.y + this.height > this.player.y;
+
+        if (collision && !this.isLit) {
+            this.contactTimer += deltaTime;
+
+            if (this.contactTimer >= this.contactDamageDelay) {
+                this.player.TakeDamage(1);
+                this.contactTimer = 0;
+            }
+        }
+        else {
+            this.contactTimer = 0;
         }
     }
 

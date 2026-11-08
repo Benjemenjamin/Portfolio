@@ -7,7 +7,7 @@ export class Player {
         this.width = 30;
         this.height = 40;
         this.lastPlatform = null;
-
+        this.health = 10;
         this.vx = 0;
         this.vy = 0;
 
@@ -16,11 +16,35 @@ export class Player {
         this.gravity = 0.5;
 
         this.onGround = false;
+
+        this.visible = true;
+        this.invulnerable = false;
+        this.invulnerabilityTime = 3000;
+        this.invulnerabilityTimer = 0;
+
+        this.blinkInterval = 150;
+        this.blinkTimer = 0;
+
     }
 
     update(deltaTime) {
         if (!Number.isFinite(deltaTime)) return;
         const timeScale = deltaTime / 16.67;
+
+        if (this.invulnerable) {
+            this.invulnerabilityTimer -= deltaTime;
+            this.blinkTimer += deltaTime;
+
+            if (this.blinkTimer >= this.blinkInterval) {
+                this.visible = !this.visible;
+                this.blinkTimer = 0;
+            }
+
+            if (this.invulnerabilityTimer <= 0) {
+                this.invulnerable = false;
+                this.visible = true;
+            }
+        }
 
         if (this.keys["a"] || this.keys["arrowleft"]) {
             this.x -= this.speed * timeScale;
@@ -101,10 +125,51 @@ export class Player {
     }
 
     draw(ctx) {
+        if (!this.visible) return;
         const screenX = this.x - window.scrollX;
         const screenY = this.y - window.scrollY;
 
-        ctx.fillStyle = "red";
+        switch (this.health) {
+            case 10:
+                ctx.fillStyle = "#02fd17";
+                break;
+
+            case 9:
+                ctx.fillStyle = "#66fd02";
+                break;
+
+            case 8:
+                ctx.fillStyle = "#88fd02";
+                break;
+
+            case 7:
+                ctx.fillStyle = "#a5fd02";
+                break;
+
+            case 6:
+                ctx.fillStyle = "#cffd02";
+                break;
+
+            case 5:
+                ctx.fillStyle = "#fdf902";
+                break;
+
+            case 4:
+                ctx.fillStyle = "#fdcf02";
+                break;
+
+            case 3:
+                ctx.fillStyle = "#fdad02";
+                break;
+
+            case 2:
+                ctx.fillStyle = "#fd5e02";
+                break;
+
+            case 1:
+                ctx.fillStyle = "#fd0202";
+                break;
+        }
         ctx.fillRect(
             screenX,
             screenY,
@@ -117,6 +182,27 @@ export class Player {
         if (this.onGround) {
             this.vy = this.jumpForce;
             this.onGround = false;
+        }
+    }
+
+    TakeDamage(amount) {
+        if (this.invulnerable || this.health <= 0) return;
+
+        this.health = Math.max(0, this.health - amount);
+
+        this.invulnerable = true;
+        this.invulnerabilityTimer = this.invulnerabilityTime;
+
+        this.visible = false;
+        this.blinkTimer = 0;
+
+        if (this.health === 0) {
+            console.log("dead");
+            this.x = 160;
+            this.y = 200;
+            this.health = 10;
+            this.invulnerable = false;
+            this.visible = true;
         }
     }
 }

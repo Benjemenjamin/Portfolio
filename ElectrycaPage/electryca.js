@@ -214,7 +214,7 @@ document.addEventListener("keydown", (event) => {
         }
     }
     if (event.code === "KeyS") {
-        console.log("s");
+
 
 
         if (!keys["sPressed"]) {
