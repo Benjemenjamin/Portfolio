@@ -95,7 +95,6 @@ document.addEventListener("keydown", (event) => {
             break;
 
         case "KeyE":
-            console.log("e");
             openDoor(currentDoor);
             break;
     }
@@ -187,23 +186,12 @@ function checkDoorCollision() {
     currentDoor = foundDoor;
     byDoor = currentDoor !== null;
 
-    // for (const door of doors) {
-    //     const image = door.querySelector("img");
-
-    //     if (door === currentDoor) {
-    //         image.src = "Images/jpg(1).png";
-    //         console.log("Door open");
-
-    //     } else {
-    //         image.src = "Images/jpg.png";
-    //     }
-    // }
     for (const door of doors) {
         const image = door.querySelector("img");
 
         const newSrc = door === currentDoor
-            ? "Images/jpg(1).png"
-            : "Images/jpg.png";
+            ? "Images/TürOffen.png"
+            : "Images/TürZu.png";
 
         // Nur ändern, wenn sich das Bild tatsächlich ändern muss
         if (image.getAttribute("src") !== newSrc) {

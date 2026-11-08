@@ -26,6 +26,7 @@ let dragging = false;
 let startX = 0;
 let startY = 0;
 let lastTime = 0;
+let currentDoor = null;
 
 const helperPlatforms = document.querySelectorAll(".helper-platform");
 const infoPlatforms = document.querySelectorAll(".info-platform");
@@ -204,22 +205,32 @@ const keys = {};
 
 document.addEventListener("keydown", (event) => {
     keys[event.key.toLowerCase()] = true;
+    switch (event.code) {
+        case "Space":
+            event.preventDefault();
 
+            if (!keys["spacePressed"]) {
+                player.jump();
+                keys["spacePressed"] = true;
+            }
+            break;
+        case "KeyS":
+            if (!keys["sPressed"]) {
+                keys["sPressed"] = true;
+            }
+            break;
+        case "KeyE":
+            openDoor(currentDoor);
+            break;
+    }
     if (event.code === "Space") {
-        event.preventDefault();
 
-        if (!keys["spacePressed"]) {
-            player.jump();
-            keys["spacePressed"] = true;
-        }
     }
     if (event.code === "KeyS") {
 
 
 
-        if (!keys["sPressed"]) {
-            keys["sPressed"] = true;
-        }
+
     }
 
 });
@@ -400,7 +411,65 @@ function spawnEnemy() {
 spawnEnemy();
 
 
+let byDoor = false;
+function checkDoorCollision() {
+    const doors = document.querySelectorAll(".project-entry");
 
+    let foundDoor = null;
+
+    for (const door of doors) {
+
+        const image = door.querySelector("img");
+        const bounds = image.getBoundingClientRect();
+        const doorX = bounds.left + window.scrollX;
+        const doorY = bounds.top + window.scrollY;
+
+        console.log(doorX);
+
+
+
+
+        if (
+            player.x + player.width > doorX &&
+            player.x < doorX + bounds.width &&
+            player.y + player.height > doorY &&
+            player.y < doorY + bounds.height
+        ) {
+            foundDoor = door;
+        }
+    }
+
+    // Erst nach der Schleife den Zustand aktualisieren
+    currentDoor = foundDoor;
+    byDoor = currentDoor !== null;
+
+    for (const door of doors) {
+        const image = door.querySelector("img");
+
+        const newSrc = door === currentDoor
+            ? "../Images/TürOffen.png"
+            : "../Images/TürZu.png";
+
+        // Nur ändern, wenn sich das Bild tatsächlich ändern muss
+        if (image.getAttribute("src") !== newSrc) {
+            image.src = newSrc;
+            console.log("Changed src");
+        }
+    }
+}
+
+function openDoor(door) {
+    if (!byDoor) return;
+    if (!door) return;
+
+
+    if (door.dataset.tutorial === "true") {
+        completeTutorialTask("doorCheck");
+    }
+    else {
+        window.location.href = door.dataset.link;
+    }
+}
 
 
 // Canvas an die Fenstergröße anpassen
@@ -772,6 +841,7 @@ function animate(timestamp) {
     checkPlayerVisibility();
     tutorialLight.update(deltaTime);
     tutorialLight.draw(ctx);
+    checkDoorCollision()
 
     for (const enemy of enemies) {
 
