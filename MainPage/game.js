@@ -47,7 +47,44 @@ const bounds = tutorialPlatform.getBoundingClientRect();
 const spawnX = bounds.left + window.scrollX + bounds.width / 2 - 15;
 const spawnY = bounds.top + window.scrollY - 40;
 
-const player = new Player(spawnX, spawnY, keys, platforms);
+const navigation = performance.getEntriesByType("navigation")[0];
+const isReload = navigation.type === "reload";
+
+let playerX = spawnX;
+let playerY = spawnY;
+
+if (!isReload) {
+    const savedX = sessionStorage.getItem("playerX");
+    const savedY = sessionStorage.getItem("playerY");
+
+    if (savedX !== null && savedY !== null) {
+        playerX = Number(savedX);
+        playerY = Number(savedY);
+    }
+}
+else {
+    sessionStorage.removeItem("playerX");
+    sessionStorage.removeItem("playerY");
+}
+
+const player = new Player(
+    playerX,
+    playerY,
+    keys,
+    platforms
+);
+
+window.scrollTo({
+    left: Math.max(0, Math.min(
+        player.x + player.width / 2 - window.innerWidth / 2,
+        document.documentElement.scrollWidth - window.innerWidth
+    )),
+    top: Math.max(0, Math.min(
+        player.y + player.height / 2 - window.innerHeight / 2,
+        document.documentElement.scrollHeight - window.innerHeight
+    )),
+    behavior: "instant"
+});
 
 document.querySelectorAll(".project-card, .ladder-block, .TutorialPlatform").forEach((element) => {
     platforms.push(new Platform(element));
@@ -210,6 +247,8 @@ function openDoor(door) {
         completeTutorialTask("doorCheck");
     }
     else {
+        sessionStorage.setItem("playerX", player.x);
+        sessionStorage.setItem("playerY", player.y);
         window.location.href = door.dataset.link;
     }
 }
@@ -496,35 +535,6 @@ function animate(timestamp) {
     checkPlayerVisibility();
     checkDoorCollision()
 
-    // for (let i = projectiles.length - 1; i >= 0; i--) {
-    //     const projectile = projectiles[i];
-
-    //     // Position aktualisieren
-    //     projectile.update();
-
-    //     const margin = 200;
-    //     if (
-    //         projectile.x < -margin ||
-    //         projectile.x > document.documentElement.scrollWidth + margin ||
-    //         projectile.y < -margin ||
-    //         projectile.y > document.documentElement.scrollHeight + margin
-    //     ) {
-    //         projectiles.splice(i, 1);
-    //         continue;
-    //     }
-
-    //     // Projektil als Kreis zeichnen
-    //     projectile.draw();
-    // }
-
-    // for (let i = enemies.length - 1; i >= 0; i--) {
-    //     const enemy = enemies[i];
-    //     enemy.update();
-    //     enemy.draw();
-    // }
-
-    // handleEnemyCollisions();
-    // Nächsten Animationsframe starten
     requestAnimationFrame(animate);
 }
 

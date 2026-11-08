@@ -256,10 +256,72 @@ codeInput.addEventListener("input", () => {
     }
 });
 
+const doors = document.querySelectorAll(".project-entry");
+let byDoor = false;
+function checkDoorCollision() {
+
+
+    let foundDoor = null;
+
+    for (const door of doors) {
+
+        const image = door.querySelector("img");
+        const bounds = image.getBoundingClientRect();
+        const doorX = bounds.left + window.scrollX;
+        const doorY = bounds.top + window.scrollY;
+
+
+        if (
+            player.x + player.width > doorX &&
+            player.x < doorX + bounds.width &&
+            player.y + player.height > doorY &&
+            player.y < doorY + bounds.height
+        ) {
+            foundDoor = door;
+        }
+    }
+
+    // Erst nach der Schleife den Zustand aktualisieren
+    currentDoor = foundDoor;
+    byDoor = currentDoor !== null;
+
+    for (const door of doors) {
+        const image = door.querySelector("img");
+
+        const newSrc = door === currentDoor
+            ? "../Images/TürOffen.png"
+            : "../Images/TürZu.png";
+
+        // Nur ändern, wenn sich das Bild tatsächlich ändern muss
+        if (image.getAttribute("src") !== newSrc) {
+            image.src = newSrc;
+            console.log("Changed src");
+        }
+    }
+}
+
+function openDoor(door) {
+    if (!byDoor) return;
+    if (!door) return;
+
+
+    if (door.dataset.tutorial === "true") {
+        completeTutorialTask("doorCheck");
+    }
+    else {
+        window.location.href = door.dataset.link;
+    }
+}
+const door = document.querySelector(".project-entry");
+const image = door.querySelector("img");
+const bounds = image.getBoundingClientRect();
+const doorX = bounds.left + window.scrollX;
+const doorY = bounds.top + window.scrollY;
+
 const platforms = [];
 const spawnPoints = [];
 const helperPlatformsArray = [];
-const player = new Player(160, 200, keys, platforms);
+const player = new Player(doorX, doorY, keys, platforms);
 const infoArea = document.querySelector(".info-area");
 
 function getPlatforms() {
@@ -411,65 +473,7 @@ function spawnEnemy() {
 spawnEnemy();
 
 
-let byDoor = false;
-function checkDoorCollision() {
-    const doors = document.querySelectorAll(".project-entry");
 
-    let foundDoor = null;
-
-    for (const door of doors) {
-
-        const image = door.querySelector("img");
-        const bounds = image.getBoundingClientRect();
-        const doorX = bounds.left + window.scrollX;
-        const doorY = bounds.top + window.scrollY;
-
-        console.log(doorX);
-
-
-
-
-        if (
-            player.x + player.width > doorX &&
-            player.x < doorX + bounds.width &&
-            player.y + player.height > doorY &&
-            player.y < doorY + bounds.height
-        ) {
-            foundDoor = door;
-        }
-    }
-
-    // Erst nach der Schleife den Zustand aktualisieren
-    currentDoor = foundDoor;
-    byDoor = currentDoor !== null;
-
-    for (const door of doors) {
-        const image = door.querySelector("img");
-
-        const newSrc = door === currentDoor
-            ? "../Images/TürOffen.png"
-            : "../Images/TürZu.png";
-
-        // Nur ändern, wenn sich das Bild tatsächlich ändern muss
-        if (image.getAttribute("src") !== newSrc) {
-            image.src = newSrc;
-            console.log("Changed src");
-        }
-    }
-}
-
-function openDoor(door) {
-    if (!byDoor) return;
-    if (!door) return;
-
-
-    if (door.dataset.tutorial === "true") {
-        completeTutorialTask("doorCheck");
-    }
-    else {
-        window.location.href = door.dataset.link;
-    }
-}
 
 
 // Canvas an die Fenstergröße anpassen
