@@ -86,7 +86,7 @@ window.scrollTo({
     behavior: "instant"
 });
 
-document.querySelectorAll(".project-card, .ladder-block, .TutorialPlatform").forEach((element) => {
+document.querySelectorAll(".project-card, .ladder-block, .TutorialPlatform, .elevator").forEach((element) => {
     platforms.push(new Platform(element));
 });
 platforms.forEach((platform) => {
@@ -132,6 +132,7 @@ document.addEventListener("keydown", (event) => {
             break;
 
         case "KeyE":
+            if (!byDoor) return;
             openDoor(currentDoor);
             break;
     }
@@ -202,6 +203,11 @@ function checkDoorCollision() {
     let foundDoor = null;
 
     for (const door of doors) {
+
+        door.addEventListener("click", () => {
+            openDoor(door);
+        });
+
         const bounds = door.getBoundingClientRect();
 
         const doorX = bounds.left + window.scrollX;
@@ -237,16 +243,17 @@ function checkDoorCollision() {
         }
     }
 }
-
+let openedDoor = false;
 function openDoor(door) {
-    if (!byDoor) return;
+    // if (!byDoor) return;
     if (!door) return;
 
 
     if (door.dataset.tutorial === "true") {
         completeTutorialTask("doorCheck");
     }
-    else {
+    else if (!openedDoor) {
+        openedDoor = true;
         sessionStorage.setItem("playerX", player.x);
         sessionStorage.setItem("playerY", player.y);
         window.location.href = door.dataset.link;
@@ -532,6 +539,12 @@ function animate(timestamp) {
     );
     player.update(deltaTime);
     player.draw(ctx);
+    for (const platform of platforms) {
+        platform.element.classList.toggle(
+            "player-hover",
+            platform === player.activePlatform
+        );
+    }
     checkPlayerVisibility();
     checkDoorCollision()
 

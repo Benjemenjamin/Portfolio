@@ -70,26 +70,20 @@ nav a {
 }
 
 
-/* PROJECT GRID */
 
-/* .project-grid {
-    display: grid;
-
-    grid-template-columns: repeat(2, 1fr);
-
-    gap: 30px;
-} */
 
 .project-grid {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
-    align-items: center;
+    align-items:end;
     gap: 20px;
 }
 
 /* PROJECT CARD */
 
 .project-card {
+    height: 100%;
+    box-sizing: border-box;
     border: 1px solid #ccc;
     padding: 20px;
 }
@@ -146,13 +140,7 @@ footer {
     gap: 100px;
 }
 
-.ladder-block {
-    width: 40px;
-    height: 25px;
-    background-color: #555;
-    border: 2px solid #333;
-    border-radius: 3px;
-}
+
 
 
 
@@ -204,6 +192,11 @@ footer {
     align-self: flex-end;
 }
 
+
+.project-entry:hover img {
+    content: url("../Images/TürOffen.png");
+}
+
 .tutorial-door {
     position: absolute;
     width: 80px;
@@ -221,11 +214,165 @@ footer {
 
 .project-content {
     display: flex;
-    align-items:flex-start;
+    align-items: flex-start;
     justify-content: space-between;
     gap: 20px;
 }
 
 .project-info {
     flex: 1;
+}
+
+
+
+:root {
+    --background: #171a21;
+    --surface: #222733;
+    --surface-hover: #2b3342;
+    --accent: #55d6c2;
+    --text: #e8edf2;
+    --text-muted: #a4adba;
+    --border: #394353;
+    --elevator-speed: 160;
+}
+
+body {
+    background-color: var(--background);
+    color: var(--text);
+    font-family: Arial, sans-serif;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+header {
+    position: sticky;
+    top: 0;
+    z-index: 10000;
+    background: rgba(23, 26, 33, 0.9);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding: 22px;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 16px;
+    transition: color 0.2s ease;
+}
+
+nav a:hover {
+    color: var(--accent);
+}
+
+.project-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.project-card:hover,
+.project-card.player-hover {
+    transform: translateY(-5px);
+    border-color: var(--accent);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.elevator {
+    margin: 0 auto;
+    width: 40px;
+    height: 10px;
+    background-color: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 3px;
+    
+    transition:
+        transform calc(var(--elevator-distance) / var(--elevator-speed) * 1s) ease-in-out,
+        border-color 0.25s ease;
+}
+
+.elevator.player-hover {
+    transform: translateY(calc(var(--elevator-distance) * -1px));
+    border-color: var(--accent);
+}
+
+.project-card img {
+    border-radius: 7px;
+}
+
+.project-content {
+    margin-top: 20px;
+}
+
+.project-card h4 {
+    color: var(--accent);
+    margin-top: 0;
+}
+
+.project-card p {
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+#projects,
+#about,
+#contact {
+    padding: 100px 10%;
+}
+
+#projects>h2,
+#about h2,
+#contact h2 {
+    font-size: 32px;
+    margin-bottom: 50px;
+    color: var(--text);
+}
+
+#university-projects h3,
+#personal-projects h3 {
+    color: var(--accent);
+    font-size: 23px;
+    margin-bottom: 30px;
+}
+
+.TutorialPlatform {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    color: var(--text);
+}
+
+.tutorial-task p {
+    color: var(--text-muted);
+}
+
+footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 35px;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.ladder-block {
+    width: 40px;
+    height: 10px;
+    background-color: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 3px;
 }

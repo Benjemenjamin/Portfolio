@@ -63,11 +63,29 @@ export class Enemy {
             this.y < this.player.y + this.player.height &&
             this.y + this.height > this.player.y;
 
+        const overlapLeft = this.player.x + this.player.width - this.x;
+        const overlapRight = this.x + this.width - this.player.x;
+
+        const overlapTop = this.player.y + this.player.height - this.y;
+        const overlapBottom = this.y + this.height - this.player.y;
+
+        const overlapX = Math.min(overlapLeft, overlapRight);
+        const overlapY = Math.min(overlapTop, overlapBottom);
+
+        let hitDirection = null;
+
+        if (overlapX < overlapY) {
+            hitDirection = overlapLeft < overlapRight ? "right" : "left";
+        }
+        else {
+            hitDirection = overlapTop < overlapBottom ? "bottom" : "top";
+        }
+
         if (collision && !this.isLit) {
             this.contactTimer += deltaTime;
 
             if (this.contactTimer >= this.contactDamageDelay) {
-                this.player.TakeDamage(1);
+                this.player.TakeDamage(1, hitDirection);
                 this.contactTimer = 0;
             }
         }

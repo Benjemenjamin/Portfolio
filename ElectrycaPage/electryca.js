@@ -316,7 +316,7 @@ const door = document.querySelector(".project-entry");
 const image = door.querySelector("img");
 const bounds = image.getBoundingClientRect();
 const doorX = bounds.left + window.scrollX;
-const doorY = bounds.top + window.scrollY;
+const doorY = bounds.bottom + window.scrollY - 40; // Spieler etwas oberhalb der Tür positionieren
 
 const platforms = [];
 const spawnPoints = [];
@@ -348,7 +348,7 @@ createHelperPlatforms()
 getPlatforms();
 
 
-let manualScrolling = false;
+let manualScrolling = true;
 
 window.addEventListener("wheel", () => {
     manualScrolling = true;

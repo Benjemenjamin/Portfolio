@@ -7,6 +7,7 @@ export class Player {
         this.width = 30;
         this.height = 40;
         this.lastPlatform = null;
+        this.activePlatform = null;
         this.health = 10;
         this.vx = 0;
         this.vy = 0;
@@ -24,7 +25,7 @@ export class Player {
 
         this.blinkInterval = 150;
         this.blinkTimer = 0;
-
+        this.friction = 0.98;
     }
 
     update(deltaTime) {
@@ -54,7 +55,19 @@ export class Player {
             this.x += this.speed * timeScale;
         }
 
+        if (this.onGround) {
+            this.friction = 0.7; // Reibung erhöhen, wenn der Spieler auf dem Boden ist
+        }
+        else {
+            this.friction = 0.95; // Reibung wieder auf normalen Wert setzen, wenn der Spieler in der Luft ist
+        }
 
+        this.x += this.vx * timeScale;
+
+        this.vx *= this.friction;
+
+
+        if (Math.abs(this.vx) < 0.1) this.vx = 0;
 
         // Alte Position merken
         const previousY = this.y;
@@ -69,6 +82,7 @@ export class Player {
 
         // Plattformkollisionen überprüfen
         // Plattformkollisionen überprüfen
+        this.activePlatform = null;
         for (const platform of this.platforms) {
             const bounds = platform.getBounds();
 
@@ -92,6 +106,7 @@ export class Player {
                 this.y = bounds.y - this.height;
                 this.vy = 0;
                 this.onGround = true;
+                this.activePlatform = platform;
             }
 
             // Vertikale Bewegung nach oben:
@@ -111,6 +126,7 @@ export class Player {
                 this.y = bounds.y + bounds.height - this.height;
                 this.vy = 0;
                 this.onGround = true;
+                this.activePlatform = platform;
             }
         }
 
@@ -121,7 +137,10 @@ export class Player {
             this.y = ground - this.height;
             this.vy = 0;
             this.onGround = true;
+            this.activePlatform = null;
         }
+
+
     }
 
     draw(ctx) {
@@ -182,10 +201,11 @@ export class Player {
         if (this.onGround) {
             this.vy = this.jumpForce;
             this.onGround = false;
+            this.friction = 0.98; // Reibung wieder auf normalen Wert setzen, wenn der Spieler springt
         }
     }
 
-    TakeDamage(amount) {
+    TakeDamage(amount, hitDirection) {
         if (this.invulnerable || this.health <= 0) return;
 
         this.health = Math.max(0, this.health - amount);
@@ -196,6 +216,25 @@ export class Player {
         this.visible = false;
         this.blinkTimer = 0;
 
+        const knockbackForce = 10;
+
+        switch (hitDirection) {
+            case "right":
+                this.vx = -knockbackForce;
+                this.vy = -knockbackForce / 2;
+                break;
+            case "left":
+                this.vx = knockbackForce;
+                this.vy = -knockbackForce / 2;
+                break;
+            case "top":
+                this.vy = -knockbackForce;
+                break;
+            case "bottom":
+                this.vy = knockbackForce;
+                break;
+        }
+        this.onGround = false;
         if (this.health === 0) {
             console.log("dead");
             this.x = 160;
