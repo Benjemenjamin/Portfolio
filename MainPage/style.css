@@ -223,6 +223,15 @@ footer {
     flex: 1;
 }
 
+#university-projects {
+    --project-accent: #55d6c2;
+    --project-glow: #09bea634;
+}
+
+#personal-projects {
+    --project-accent: #b58cff;
+    --project-glow: #6b46af60;
+}
 
 
 :root {
@@ -289,13 +298,13 @@ nav a:hover {
 .project-card:hover,
 .project-card.player-hover {
     transform: translateY(-5px);
-    border-color: var(--accent);
+    border-color: var(--project-accent);
     /* box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); */
     box-shadow:
-        0 0 5px var(--glow),
-        0 0 10px var(--glow),
-        0 0 30px var(--glow),
-        0 0 40px var(--glow);
+        0 0 5px var(--project-glow),
+        0 0 10px var(--project-glow),
+        0 0 30px var(--project-glow),
+        0 0 40px var(--project-glow);
 }
 
 .elevator {
@@ -313,12 +322,12 @@ nav a:hover {
 
 .elevator.player-hover {
     transform: translateY(calc(var(--elevator-distance) * -1px));
-    border-color: var(--accent);
+    border-color: var(--project-accent);
     box-shadow:
-        0 0 5px var(--glow),
-        0 0 10px var(--glow),
-        0 0 30px var(--glow),
-        0 0 40px var(--glow);
+        0 0 5px var(--project-glow),
+        0 0 10px var(--project-glow),
+        0 0 30px var(--project-glow),
+        0 0 40px var(--project-glow);
 }
 
 .project-card img {
@@ -330,7 +339,7 @@ nav a:hover {
 }
 
 .project-card h4 {
-    color: var(--accent);
+    color: var(--project-accent);
     margin-top: 0;
 }
 
@@ -355,7 +364,7 @@ nav a:hover {
 
 #university-projects h3,
 #personal-projects h3 {
-    color: var(--accent);
+    color: var(--project-accent);
     font-size: 23px;
     margin-bottom: 30px;
 }
