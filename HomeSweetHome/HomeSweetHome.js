@@ -22,7 +22,7 @@ let startX = 0;
 let startY = 0;
 let lastTime = 0;
 
-
+let currentDoor = null;
 
 function createHelperPlatforms() {
     const infoArea = document.querySelector(".info-area");
@@ -141,7 +141,7 @@ positionHelperPlatforms();
 
 
 
-let manualScrolling = false;
+let manualScrolling = true;
 
 window.addEventListener("wheel", () => {
     manualScrolling = true;
@@ -198,8 +198,62 @@ function checkPlayerVisibility() {
         });
     }
 }
+const doors = document.querySelectorAll(".project-entry");
+let byDoor = false;
+function checkDoorCollision() {
 
 
+    let foundDoor = null;
+
+    for (const door of doors) {
+
+        const image = door.querySelector("img");
+        const bounds = image.getBoundingClientRect();
+        const doorX = bounds.left + window.scrollX;
+        const doorY = bounds.top + window.scrollY;
+
+
+        if (
+            player.x + player.width > doorX &&
+            player.x < doorX + bounds.width &&
+            player.y + player.height > doorY &&
+            player.y < doorY + bounds.height
+        ) {
+            foundDoor = door;
+        }
+    }
+
+    // Erst nach der Schleife den Zustand aktualisieren
+    currentDoor = foundDoor;
+    byDoor = currentDoor !== null;
+
+    for (const door of doors) {
+        const image = door.querySelector("img");
+
+        const newSrc = door === currentDoor
+            ? "../Images/TürOffen.png"
+            : "../Images/TürZu.png";
+
+        // Nur ändern, wenn sich das Bild tatsächlich ändern muss
+        if (image.getAttribute("src") !== newSrc) {
+            image.src = newSrc;
+            console.log("Changed src");
+        }
+    }
+}
+
+function openDoor(door) {
+    if (!byDoor) return;
+    if (!door) return;
+
+
+    if (door.dataset.tutorial === "true") {
+        completeTutorialTask("doorCheck");
+    }
+    else {
+        window.location.href = door.dataset.link;
+    }
+}
 
 export class Furniture {
     constructor(x, y, imageSrc, platforms) {
@@ -286,12 +340,37 @@ export class Furniture {
     }
 
     checkCollision(enemy) {
-        return (
+        const overlaps =
             this.x < enemy.x + enemy.width &&
             this.x + this.width > enemy.x &&
             this.y < enemy.y + enemy.height &&
-            this.y + this.height > enemy.y
-        );
+            this.y + this.height > enemy.y;
+
+        if (!overlaps) return null;
+
+        const overlapX = Math.min(
+            this.x + this.width,
+            enemy.x + enemy.width
+        ) - Math.max(this.x, enemy.x);
+
+        const overlapY = Math.min(
+            this.y + this.height,
+            enemy.y + enemy.height
+        ) - Math.max(this.y, enemy.y);
+
+        let direction;
+
+        if (overlapX < overlapY) {
+            direction = this.x + this.width / 2 < enemy.x + enemy.width / 2
+                ? "left"
+                : "right";
+        } else {
+            direction = this.y + this.height / 2 < enemy.y + enemy.height / 2
+                ? "top"
+                : "bottom";
+        }
+
+        return { direction };
     }
 }
 
@@ -303,12 +382,33 @@ export class FurnitureEnemy extends Enemy {
         this.dead = false;
     }
 
-    takeDamage(damage = 1) {
+    takeDamage(damage = 1, hitDirection) {
         this.health -= damage;
 
         if (this.health <= 0) {
             this.dead = true;
         }
+
+        const knockbackForce = 10;
+
+        switch (hitDirection) {
+            case "right":
+                this.vx = -knockbackForce;
+                this.vy = -knockbackForce / 2;
+                break;
+            case "left":
+                this.vx = knockbackForce;
+                this.vy = -knockbackForce / 2;
+                break;
+            case "top":
+                this.vy = -knockbackForce;
+                break;
+            case "bottom":
+                this.vy = knockbackForce;
+                break;
+        }
+
+        this.isKnockedBack = true;
     }
 }
 
@@ -368,6 +468,7 @@ document.addEventListener("keyup", (event) => {
 
 window.addEventListener("keydown", (event) => {
     if (event.key.toLowerCase() !== "e") return;
+    openDoor(currentDoor);
     if (carriedFurniture !== null) return;
 
     for (const item of furniture) {
@@ -408,10 +509,16 @@ window.addEventListener("mousedown", (event) => {
 });
 
 
+const door = document.querySelector(".project-entry");
+const image = door.querySelector("img");
+const bounds = image.getBoundingClientRect();
+const doorX = bounds.left + window.scrollX;
+const doorY = bounds.bottom + window.scrollY - 40; // Spieler etwas oberhalb der Tür positionieren
+
 const platforms = [];
 const spawnPoints = [];
 const helperPlatformsArray = [];
-const player = new Player(160, 200, keys, platforms);
+const player = new Player(doorX, doorY, keys, platforms);
 
 
 function getPlatforms() {
@@ -622,6 +729,7 @@ function animate(timestamp) {
         window.innerWidth,
         window.innerHeight
     );
+    checkDoorCollision()
     for (const item of furniture) {
         item.update(deltaTime);
         item.draw(ctx);
@@ -631,8 +739,10 @@ function animate(timestamp) {
         if (!item.isThrown) continue;
 
         for (const enemy of enemies) {
-            if (item.checkCollision(enemy)) {
-                enemy.takeDamage(1);
+            const collision = item.checkCollision(enemy);
+
+            if (collision) {
+                enemy.takeDamage(1, collision.direction);
 
                 item.isThrown = false;
                 item.vx = 0;
@@ -641,6 +751,7 @@ function animate(timestamp) {
             }
         }
     }
+
     for (let i = enemies.length - 1; i >= 0; i--) {
         if (enemies[i].dead) {
             enemies.splice(i, 1);

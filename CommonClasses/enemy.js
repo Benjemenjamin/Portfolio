@@ -20,6 +20,11 @@ export class Enemy {
         this.animation = animation;
         this.direction = 1;
         this.isMoving = false;
+
+        this.vx = 0;
+        this.vy = 0;
+        this.gravity = 0.5;
+        this.isKnockedBack = false;
     }
 
     update(deltaTime) {
@@ -27,6 +32,22 @@ export class Enemy {
         this.damageCooldown = Math.max(0, this.damageCooldown - deltaTime);
         this.checkPlayerCollision(deltaTime);
         this.isMoving = false;
+
+        if (this.isKnockedBack) {
+            const timeScale = deltaTime / 16.67;
+
+            this.x += this.vx * timeScale;
+            this.vy += this.gravity * timeScale;
+
+            this.vx *= Math.pow(0.9, timeScale);
+
+            if (this.vy >= 0) {
+                this.vy = 0;
+                this.isKnockedBack = false;
+            }
+
+            return;
+        }
 
         if (this.isLit) return;
 

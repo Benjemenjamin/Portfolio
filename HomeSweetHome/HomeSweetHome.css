@@ -41,6 +41,20 @@ body {
     box-shadow: 0 5px 0 #101318;
 }
 
+
+.project-entry img {
+    width: 10%;
+    height: auto;
+    display: block;
+}
+
+.project-entry {
+    position: absolute;
+    top: 0;
+    left: 20%;
+    transform: translateY(-100%);
+}
+
 /* Erste Hilfsplattform */
 
 

@@ -13,7 +13,7 @@ export class Player {
         this.vy = 0;
 
         this.speed = 4;
-        this.jumpForce = -12;
+        this.jumpForce = -5;
         this.gravity = 0.5;
 
         this.onGround = false;
@@ -26,11 +26,25 @@ export class Player {
         this.blinkInterval = 150;
         this.blinkTimer = 0;
         this.friction = 0.98;
+
+        this.jumpHoldTime = 0;
+        this.maxJumpHoldTime = 0.25;
+        this.jumpBoost = 1.5;
+        this.jumpBoostDecay = 10.0;
     }
 
     update(deltaTime) {
         if (!Number.isFinite(deltaTime)) return;
         const timeScale = deltaTime / 16.67;
+
+        if (this.keys["spacePressed"] && this.vy < 0 && this.jumpHoldTime < this.maxJumpHoldTime) {
+
+            const currentBoost = this.jumpBoost * Math.exp(-this.jumpBoostDecay * this.jumpHoldTime);
+
+            this.vy -= currentBoost * timeScale;
+            this.jumpHoldTime += deltaTime / 1000;
+        }
+
 
         if (this.invulnerable) {
             this.invulnerabilityTimer -= deltaTime;
@@ -200,6 +214,7 @@ export class Player {
     jump() {
         if (this.onGround) {
             this.vy = this.jumpForce;
+            this.jumpHoldTime = 0;
             this.onGround = false;
             this.friction = 0.98; // Reibung wieder auf normalen Wert setzen, wenn der Spieler springt
         }
