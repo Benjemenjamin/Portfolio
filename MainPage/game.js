@@ -539,11 +539,44 @@ function animate(timestamp) {
     );
     player.update(deltaTime);
     player.draw(ctx);
+
     for (const platform of platforms) {
-        platform.element.classList.toggle(
-            "player-hover",
-            platform === player.activePlatform
-        );
+
+        const elevator = platform.element;
+        const isActive = platform === player.activePlatform;
+
+        if (elevator.classList.contains("elevator")) {
+
+            if (!elevator.dataset.distanceCalculated) {
+
+                const previous = elevator.previousElementSibling;
+                const next = elevator.nextElementSibling;
+
+                let targetCard = null;
+
+                if (previous?.classList.contains("project-card")) {
+                    targetCard = previous;
+                } else if (next?.classList.contains("project-card")) {
+                    targetCard = next;
+                }
+
+                const cardTop = targetCard.getBoundingClientRect().top;
+                const elevatorTop = elevator.getBoundingClientRect().top;
+
+                const distance = elevatorTop - cardTop;
+
+                elevator.style.setProperty("--elevator-distance", `${distance}`);
+
+                elevator.dataset.distanceCalculated = "true";
+            }
+
+            elevator.classList.toggle("player-hover", isActive);
+
+        } else {
+
+            elevator.classList.toggle("player-hover", isActive);
+
+        }
     }
     checkPlayerVisibility();
     checkDoorCollision()
