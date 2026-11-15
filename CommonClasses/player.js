@@ -36,6 +36,19 @@ export class Player {
     update(deltaTime) {
         if (!Number.isFinite(deltaTime)) return;
         const timeScale = deltaTime / 16.67;
+        // console.log(this.y);
+
+        // Spieler mit dem Elevator mitbewegen
+        const previousPlatform = this.activePlatform;
+
+        if (
+            this.onGround &&
+            previousPlatform?.element.classList.contains("elevator")
+        ) {
+            const bounds = previousPlatform.getBounds();
+            this.y = bounds.y - this.height;
+        }
+
 
         if (this.keys["spacePressed"] && this.vy < 0 && this.jumpHoldTime < this.maxJumpHoldTime) {
 
@@ -213,7 +226,10 @@ export class Player {
 
     jump() {
         if (this.onGround) {
-            this.vy = this.jumpForce;
+            console.log("Elevator velocity:", this.activePlatform?.velocityY);
+            const platformVelocity = this.activePlatform?.velocityY ?? 0;
+            this.vy = this.jumpForce + platformVelocity;
+
             this.jumpHoldTime = 0;
             this.onGround = false;
             this.friction = 0.98; // Reibung wieder auf normalen Wert setzen, wenn der Spieler springt

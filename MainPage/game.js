@@ -542,11 +542,10 @@ function animate(timestamp) {
         window.innerWidth,
         window.innerHeight
     );
-    player.update(deltaTime);
-    player.draw(ctx);
+
 
     for (const platform of platforms) {
-
+        platform.getMovement(deltaTime);
         const elevator = platform.element;
         const isActive = platform === player.activePlatform;
 
@@ -583,6 +582,8 @@ function animate(timestamp) {
 
         }
     }
+    player.update(deltaTime);
+    player.draw(ctx);
     checkPlayerVisibility();
     checkDoorCollision()
 

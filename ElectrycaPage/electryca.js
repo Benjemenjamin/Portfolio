@@ -265,6 +265,11 @@ function checkDoorCollision() {
 
     for (const door of doors) {
 
+        door.addEventListener("click", () => {
+            openDoor(door);
+        });
+
+
         const image = door.querySelector("img");
         const bounds = image.getBoundingClientRect();
         const doorX = bounds.left + window.scrollX;
@@ -300,15 +305,22 @@ function checkDoorCollision() {
     }
 }
 
+let openedDoor = false;
+
+window.addEventListener("pageshow", () => {
+    openedDoor = false;
+});
+
 function openDoor(door) {
-    if (!byDoor) return;
+    // if (!byDoor) return;
     if (!door) return;
 
 
     if (door.dataset.tutorial === "true") {
         completeTutorialTask("doorCheck");
     }
-    else {
+    else if (!openedDoor) {
+        openedDoor = true;
         window.location.href = door.dataset.link;
     }
 }

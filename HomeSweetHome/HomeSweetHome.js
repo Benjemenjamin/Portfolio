@@ -207,6 +207,10 @@ function checkDoorCollision() {
 
     for (const door of doors) {
 
+        door.addEventListener("click", () => {
+            openDoor(door);
+        });
+
         const image = door.querySelector("img");
         const bounds = image.getBoundingClientRect();
         const doorX = bounds.left + window.scrollX;
@@ -241,16 +245,21 @@ function checkDoorCollision() {
         }
     }
 }
+let openedDoor = false;
 
+window.addEventListener("pageshow", () => {
+    openedDoor = false;
+});
 function openDoor(door) {
-    if (!byDoor) return;
+    // if (!byDoor) return;
     if (!door) return;
 
 
     if (door.dataset.tutorial === "true") {
         completeTutorialTask("doorCheck");
     }
-    else {
+    else if (!openedDoor) {
+        openedDoor = true;
         window.location.href = door.dataset.link;
     }
 }
@@ -260,8 +269,8 @@ export class Furniture {
         this.x = x;
         this.y = y;
 
-        this.width = 50;
-        this.height = 50;
+        this.width = 100;
+        this.height = 100;
 
         this.image = new Image();
         this.image.src = imageSrc;
@@ -541,11 +550,28 @@ function getPlatforms() {
 createHelperPlatforms()
 getPlatforms();
 
-const furniture = [
-    new Furniture(300, 500, "../Images/HSH_MainMenu.png", platforms),
-    new Furniture(500, 500, "../Images/HSH_MainMenu.png", platforms),
-    new Furniture(700, 500, "../Images/HSH_MainMenu.png", platforms)
+const furnitureImages = [
+    "../Images/Furniture/cabinet.png",
+    "../Images/Furniture/chair.png",
+    "../Images/Furniture/drawer.png",
+    "../Images/Furniture/niceChair.png",
+    "../Images/Furniture/table.png"
 ];
+
+const furniture = [
+    new Furniture(300, 500, getFurnitureImg(), platforms),
+    new Furniture(500, 500, getFurnitureImg(), platforms),
+    new Furniture(700, 500, getFurnitureImg(), platforms)
+];
+
+
+function getFurnitureImg() {
+    if (furnitureImages.length === 0) return null;
+
+    const randomIndex = Math.floor(Math.random() * furnitureImages.length);
+
+    return furnitureImages.splice(randomIndex, 1)[0];
+}
 let carriedFurniture = null;
 
 
