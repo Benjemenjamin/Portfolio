@@ -243,6 +243,143 @@ body.lights-on .screenshot-gallery {
 
 .screenshot-grid img:hover {
     transform: scale(1.03);
+    border-color: #55a7f3;
+}
+
+.screenshot-category {
+    margin-top: 25px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    background: #203f5a;
+}
+
+.screenshot-category summary {
+    padding: 18px 20px;
+    background: #203f5a;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--accent);
+    list-style: none;
+    border-left: 4px solid #8fc8ff;
+}
+
+.screenshot-category summary::-webkit-details-marker {
+    display: none;
+}
+
+.screenshot-category summary::after {
+    content: "+";
+    float: right;
+}
+
+.screenshot-category[open] summary::after {
+    content: "−";
+}
+
+.screenshot-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 20px;
+}
+
+.screenshot-grid img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: fill;
+
+    border: 4px solid #000000;
+    border-radius: 6px;
+
+    box-sizing: border-box;
+}
+
+.lightbox {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.9);
+
+    justify-content: center;
+    align-items: center;
+
+    padding: 40px;
+}
+
+.lightbox.active {
+    display: flex;
+}
+
+.lightbox img {
+    max-width: 90%;
+    max-height: 85vh;
+    object-fit: contain;
+
+    border: 2px solid #55a7f3;
+    border-radius: 8px;
+}
+
+.lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 35px;
+
+    color: white;
+    font-size: 40px;
+    cursor: pointer;
+}
+
+.screenshot-grid img {
+    cursor: zoom-in;
+}
+
+.lightbox img {
+    cursor: default;
+}
+
+
+.lightbox button {
+    position: absolute;
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 35px;
+    transition: color 0.2s;
+}
+
+.lightbox button:hover {
+    color: #55a7f3;
+}
+
+
+
+.lightbox-prev {
+    left: 30px;
+}
+
+.lightbox-next {
+    right: 30px;
+}
+
+#lightbox-counter {
+    position: absolute;
+    bottom: 20px;
+    color: white;
+    font-size: 16px;
+}
+
+#lightbox-category {
+    position: absolute;
+    top: 25px;
+
+    color: #55a7f3;
+    font-size: 20px;
+    font-weight: bold;
 }
 
 /* =========================

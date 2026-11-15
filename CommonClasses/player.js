@@ -74,11 +74,11 @@ export class Player {
             }
         }
 
-        if (this.keys["a"] || this.keys["arrowleft"]) {
+        if (this.keys["a"]) {
             this.x -= this.speed * timeScale;
         }
 
-        if (this.keys["d"] || this.keys["arrowright"]) {
+        if (this.keys["d"]) {
             this.x += this.speed * timeScale;
         }
 

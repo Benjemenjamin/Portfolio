@@ -117,14 +117,74 @@
         <section class="screenshot-gallery">
             <div id="hiddenArrowPosition"></div>
             <h2>Screenshots</h2>
-            <div class="screenshot-grid">
-                <img src="..\Images/MainMenu.png" alt="Screenshot 1">
-                <img src="..\Images/MainMenu.png" alt="Screenshot 2">
-                <img src="..\Images/MainMenu.png" alt="Screenshot 3">
-            </div>
+
+            <details class="screenshot-category">
+                <summary>Enemies & Encounters</summary>
+
+                <div class="screenshot-grid">
+                    <img src="../Images/Electryca/DeadRobot.png" alt="Dead Robot" loading="lazy">
+
+                    <img src="../Images/Electryca/FirstScare.png" alt="First Encounter" loading="lazy">
+
+                    <img src="../Images/Electryca/Robot.png" alt="Awakened Robot" loading="lazy">
+
+                    <img src="../Images/Electryca/Factory.png" alt="Factory Environment" loading="lazy">
+
+                </div>
+            </details>
+
+            <details class="screenshot-category">
+                <summary>Puzzles & Mechanics</summary>
+
+                <div class="screenshot-grid">
+                    <img src="../Images/Electryca/Battery.png" alt="Battery Puzzle" loading="lazy">
+
+                    <img src="../Images/Electryca/Axe.png" alt="Axe Mechanic" loading="lazy">
+
+                    <img src="../Images/Electryca/Generator.png" alt="Generator Puzzle" loading="lazy">
+
+                    <img src="../Images/Electryca/PC.png" alt="Fish Puzzle" loading="lazy">
+
+                    <img src="../Images/Electryca/PCPassword.png" alt="Factory Environment" loading="lazy">
+
+                    <img src="../Images/Electryca/PCArchivePin.png" alt="Factory Environment" loading="lazy">
+                </div>
+            </details>
+
+            <details class="screenshot-category">
+                <summary>Environment & Level Design</summary>
+
+                <div class="screenshot-grid">
+                    <img src="../Images/Electryca/Office.png" alt="Factory Environment" loading="lazy">
+
+                    <img src="../Images/Electryca/MainOffice.png" alt="Main Office" loading="lazy">
+
+                    <img src="../Images/Electryca/End.png" alt="End Area" loading="lazy">
+                </div>
+            </details>
         </section>
 
     </main>
+
+    <div id="lightbox" class="lightbox">
+
+        <button class="lightbox-close" aria-label="Close">&times;</button>
+
+        <div id="lightbox-category"></div>
+
+        <button class="lightbox-prev" aria-label="Previous image">
+            &#10094;
+        </button>
+
+        <img id="lightbox-image" src="" alt="">
+
+        <button class="lightbox-next" aria-label="Next image">
+            &#10095;
+        </button>
+
+        <div id="lightbox-counter"></div>
+
+    </div>
     <script type="module" src="electryca.js"></script>
 </body>
 
