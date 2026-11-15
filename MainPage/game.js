@@ -243,7 +243,12 @@ function checkDoorCollision() {
         }
     }
 }
+
 let openedDoor = false;
+
+window.addEventListener("pageshow", () => {
+    openedDoor = false;
+});
 function openDoor(door) {
     // if (!byDoor) return;
     if (!door) return;
