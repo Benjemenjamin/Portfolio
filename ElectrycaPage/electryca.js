@@ -29,7 +29,18 @@ let lastTime = 0;
 let currentDoor = null;
 
 
+const categories = document.querySelectorAll(".screenshot-category");
 
+categories.forEach(category => {
+    const summary = category.querySelector(".screenshot-summary");
+
+    summary.addEventListener("click", event => {
+        event.preventDefault();
+        console.log("open");
+        
+        category.classList.toggle("open");
+    });
+});
 
 
 const lightbox = document.getElementById("lightbox");
@@ -57,7 +68,7 @@ function showImage(index) {
 
     // Kategorie ermitteln
     const category = img.closest(".screenshot-category");
-    categoryLabel.textContent = category.querySelector("summary").textContent;
+    categoryLabel.textContent = category.querySelector(".screenshot-summary").textContent;
 
     counter.textContent =
         `${currentImageIndex + 1} / ${screenshots.length}`;

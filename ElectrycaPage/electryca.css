@@ -206,6 +206,8 @@ body.lights-on .screenshot-gallery {
    Screenshot-Bereich
 ========================= */
 
+/* Screenshot gallery */
+
 .screenshot-gallery {
     position: relative;
     width: 100%;
@@ -224,27 +226,8 @@ body.lights-on .screenshot-gallery {
     font-size: 28px;
 }
 
-.screenshot-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 18px;
-    z-index: 3;
-}
 
-.screenshot-grid img {
-    display: block;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-    border-radius: 6px;
-    transition: transform 0.2s ease;
-    z-index: 3;
-}
-
-.screenshot-grid img:hover {
-    transform: scale(1.03);
-    border-color: #55a7f3;
-}
+/* Screenshot categories */
 
 .screenshot-category {
     margin-top: 25px;
@@ -254,7 +237,7 @@ body.lights-on .screenshot-gallery {
     background: #203f5a;
 }
 
-.screenshot-category summary {
+/* .screenshot-category summary {
     padding: 18px 20px;
     background: #203f5a;
     cursor: pointer;
@@ -274,26 +257,90 @@ body.lights-on .screenshot-gallery {
     float: right;
 }
 
-.screenshot-category[open] summary::after {
+.screenshot-category.open summary::after {
     content: "−";
+} */
+
+.screenshot-summary {
+    padding: 18px 20px;
+    background: #203f5a;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--accent);
+    border-left: 4px solid #8fc8ff;
+}
+
+.screenshot-summary::after {
+    content: "+";
+    float: right;
+}
+
+.screenshot-category.open .screenshot-summary::after {
+    content: "−";
+}
+
+
+/* Smooth opening and closing */
+
+.screenshot-content {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.4s ease;
+}
+
+.screenshot-category.open .screenshot-content {
+    grid-template-rows: 1fr;
+}
+
+.screenshot-inner {
+    min-height: 0;
+    overflow: hidden;
 }
 
 .screenshot-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.screenshot-category.open .screenshot-content {
+    grid-template-rows: 1fr;
+}
+
+.screenshot-category.open .screenshot-content>.screenshot-grid {
+    padding: 20px;
+}
+
+.screenshot-content>.screenshot-grid {
+    min-height: 0;
+    overflow: hidden;
+    padding: 0 20px;
+}
+
+/* Screenshot grid */
+
+.screenshot-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 20px;
     padding: 20px;
 }
 
 .screenshot-grid img {
+    display: block;
     width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: fill;
-
+    object-fit: contain;
     border: 4px solid #000000;
     border-radius: 6px;
-
     box-sizing: border-box;
+    transition: transform 0.2s ease;
+}
+
+.screenshot-grid img:hover {
+    transform: scale(1.03);
+    border-color: #55a7f3;
 }
 
 .lightbox {
