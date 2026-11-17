@@ -111,17 +111,86 @@
             <div class="helper-platform"></div>
         </section>
 
-        <section class="screenshot-gallery">
 
+        <section class="screenshot-gallery">
+            <div id="hiddenArrowPosition"></div>
             <h2>Screenshots</h2>
-            <div class="screenshot-grid">
-                <img src="..\Images\HSH_MainMenu.png" alt="Screenshot 1">
-                <img src="..\Images\HSH_MainMenu.png" alt="Screenshot 2">
-                <img src="..\Images\HSH_MainMenu.png" alt="Screenshot 3">
+
+            <div class="screenshot-category">
+                <div class="screenshot-summary">Enemies & Encounters</div>
+                <div class="screenshot-content">
+                    <div class="screenshot-inner">
+                        <div class="screenshot-grid">
+                            <img src="../Images/Electryca/DeadRobot.png" alt="Dead Robot" loading="lazy">
+
+                            <img src="../Images/Electryca/FirstScare.png" alt="First Encounter" loading="lazy">
+
+                            <img src="../Images/Electryca/Robot.png" alt="Awakened Robot" loading="lazy">
+
+                            <img src="../Images/Electryca/Factory.png" alt="Factory Environment" loading="lazy">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="screenshot-category">
+                <div class="screenshot-summary">Puzzles & Mechanics</div>
+                <div class="screenshot-content">
+                    <div class="screenshot-inner">
+                        <div class="screenshot-grid">
+                            <img src="../Images/Electryca/Battery.png" alt="Battery Puzzle" loading="lazy">
+
+                            <img src="../Images/Electryca/Axe.png" alt="Axe Mechanic" loading="lazy">
+
+                            <img src="../Images/Electryca/Generator.png" alt="Generator Puzzle" loading="lazy">
+
+                            <img src="../Images/Electryca/PC.png" alt="Fish Puzzle" loading="lazy">
+
+                            <img src="../Images/Electryca/PCPassword.png" alt="Factory Environment" loading="lazy">
+
+                            <img src="../Images/Electryca/PCArchivePin.png" alt="Factory Environment" loading="lazy">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="screenshot-category">
+                <div class="screenshot-summary">Environment & Level Design</div>
+                <div class="screenshot-content">
+                    <div class="screenshot-inner">
+                        <div class="screenshot-grid">
+                            <img src="../Images/Electryca/Office.png" alt="Factory Environment" loading="lazy">
+
+                            <img src="../Images/Electryca/MainOffice.png" alt="Main Office" loading="lazy">
+
+                            <img src="../Images/Electryca/End.png" alt="End Area" loading="lazy">
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
     </main>
+    <div id="lightbox" class="lightbox">
+
+        <button class="lightbox-close" aria-label="Close">&times;</button>
+
+        <div id="lightbox-category"></div>
+
+        <button class="lightbox-prev" aria-label="Previous image">
+            &#10094;
+        </button>
+
+        <img id="lightbox-image" src="" alt="">
+
+        <button class="lightbox-next" aria-label="Next image">
+            &#10095;
+        </button>
+
+        <div id="lightbox-counter"></div>
+
+    </div>
     <script type="module" src="HomeSweetHome.js"></script>
 </body>
 

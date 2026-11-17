@@ -24,6 +24,141 @@ let lastTime = 0;
 
 let currentDoor = null;
 
+
+
+
+const categories = document.querySelectorAll(".screenshot-category");
+
+categories.forEach(category => {
+    const summary = category.querySelector(".screenshot-summary");
+
+    summary.addEventListener("click", event => {
+        event.preventDefault();
+        console.log("open");
+
+        category.classList.toggle("open");
+    });
+});
+
+
+const lightbox = document.getElementById("lightbox");
+const lightboxImage = document.getElementById("lightbox-image");
+const closeButton = document.querySelector(".lightbox-close");
+const prevButton = document.querySelector(".lightbox-prev");
+const nextButton = document.querySelector(".lightbox-next");
+const counter = document.getElementById("lightbox-counter");
+const categoryLabel = document.getElementById("lightbox-category");
+
+const screenshots = document.querySelectorAll(".screenshot-grid img");
+
+let currentImageIndex = 0;
+
+
+// Bild anzeigen
+function showImage(index) {
+
+    currentImageIndex = index;
+
+    const img = screenshots[currentImageIndex];
+
+    lightboxImage.src = img.src;
+    lightboxImage.alt = img.alt;
+
+    // Kategorie ermitteln
+    const category = img.closest(".screenshot-category");
+    categoryLabel.textContent = category.querySelector(".screenshot-summary").textContent;
+
+    counter.textContent =
+        `${currentImageIndex + 1} / ${screenshots.length}`;
+}
+
+
+// Lightbox öffnen
+screenshots.forEach((img, index) => {
+
+    img.addEventListener("click", () => {
+
+        lightbox.classList.add("active");
+
+        showImage(index);
+
+    });
+
+});
+
+
+// Vorheriges Bild
+function previousImage() {
+
+    currentImageIndex--;
+
+    if (currentImageIndex < 0) {
+        currentImageIndex = screenshots.length - 1;
+    }
+
+    showImage(currentImageIndex);
+}
+
+
+// Nächstes Bild
+function nextImage() {
+
+    currentImageIndex++;
+
+    if (currentImageIndex >= screenshots.length) {
+        currentImageIndex = 0;
+    }
+
+    showImage(currentImageIndex);
+}
+
+
+// Buttons
+prevButton.addEventListener("click", previousImage);
+nextButton.addEventListener("click", nextImage);
+
+
+// Lightbox schließen
+function closeLightbox() {
+    lightbox.classList.remove("active");
+    lightboxImage.src = "";
+}
+
+closeButton.addEventListener("click", closeLightbox);
+
+
+// Klick auf Hintergrund
+lightbox.addEventListener("click", (event) => {
+
+    if (event.target === lightbox) {
+        closeLightbox();
+    }
+
+});
+
+
+// Tastatursteuerung
+document.addEventListener("keydown", (event) => {
+
+    if (!lightbox.classList.contains("active")) return;
+
+    if (event.key === "Escape") {
+        closeLightbox();
+    }
+
+    if (event.key === "ArrowLeft") {
+        previousImage();
+    }
+
+    if (event.key === "ArrowRight") {
+        nextImage();
+    }
+
+});
+
+
+
+
 function createHelperPlatforms() {
     const infoArea = document.querySelector(".info-area");
     const infoPlatforms = document.querySelectorAll(".info-platform");
@@ -166,8 +301,6 @@ function checkPlayerVisibility() {
     const playerMoving =
         keys["a"] ||
         keys["d"] ||
-        keys["arrowleft"] ||
-        keys["arrowright"] ||
         keys[" "] ||
         keys["space"] ||
         keys["s"];
